@@ -16,16 +16,13 @@ limitations under the License.
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"os"
+
+	"github.com/fhsinchy/tent/utils"
 
 	"github.com/containers/podman/v2/libpod/define"
-	"github.com/containers/podman/v2/pkg/bindings"
 	"github.com/containers/podman/v2/pkg/bindings/containers"
-	"github.com/containers/podman/v2/pkg/bindings/images"
-	"github.com/containers/podman/v2/pkg/domain/entities"
 	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/spf13/cobra"
 )
@@ -44,15 +41,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// Get Podman socket location
-		sockDir := os.Getenv("XDG_RUNTIME_DIR")
-		socket := "unix:" + sockDir + "/podman/podman.sock"
-
-		// Connect to Podman socket
-		connText, err := bindings.NewConnection(context.Background(), socket)
-		if err != nil {
-			log.Fatalln(err)
-		}
+		connText := utils.GetContext()
 
 		service := args[0]
 
@@ -81,11 +70,8 @@ to quickly create a Cobra application.`,
 			}
 
 			rawImage := "docker.io/mysql:" + tag
-			fmt.Println("pulling mysql image")
-			_, err = images.Pull(connText, rawImage, entities.ImagePullOptions{})
-			if err != nil {
-				log.Fatalln(err)
-			}
+
+			utils.PullImage(connText, rawImage)
 
 			env := make(map[string]string)
 			env["MYSQL_ROOT_PASSWORD"] = password
@@ -95,20 +81,20 @@ to quickly create a Cobra application.`,
 			s.Name = "tent-mysql"
 			s.Remove = true
 			s.Env = env
-			_, err := containers.CreateWithSpec(connText, s)
+			_, err := containers.CreateWithSpec(*connText, s)
 			if err != nil {
 				log.Fatalln(err)
 			}
 
 			// Container start
 			fmt.Println("starting mysql container")
-			err = containers.Start(connText, "tent-mysql", nil)
+			err = containers.Start(*connText, "tent-mysql", nil)
 			if err != nil {
 				log.Fatalln(err)
 			}
 
 			running := define.ContainerStateRunning
-			_, err = containers.Wait(connText, "tent-mysql", &running)
+			_, err = containers.Wait(*connText, "tent-mysql", &running)
 			if err != nil {
 				log.Fatalln(err)
 			}
