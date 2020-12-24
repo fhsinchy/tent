@@ -17,12 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/fhsinchy/tent/utils"
 
-	"github.com/containers/podman/v2/libpod/define"
-	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/spf13/cobra"
 )
 
@@ -70,21 +67,12 @@ to quickly create a Cobra application.`,
 			}
 
 			rawImage := "docker.io/mysql:" + tag
-
-			utils.PullImage(connText, rawImage)
-
 			env := make(map[string]string)
 			env["MYSQL_ROOT_PASSWORD"] = password
 
+			utils.PullImage(connText, rawImage)
 			utils.CreateContainer(connText, rawImage, env, containerName)
-
 			utils.StartContainer(connText, containerName)
-
-			running := define.ContainerStateRunning
-			_, err := containers.Wait(*connText, containerName, &running)
-			if err != nil {
-				log.Fatalln(err)
-			}
 		default:
 			fmt.Println("invalid service name given")
 		}
