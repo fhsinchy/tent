@@ -16,14 +16,12 @@ limitations under the License.
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/containers/podman/v2/libpod/define"
-	"github.com/containers/podman/v2/pkg/bindings"
 	"github.com/containers/podman/v2/pkg/bindings/containers"
+	"github.com/fhsinchy/tent/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -38,41 +36,22 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Get Podman socket location
-		sockDir := os.Getenv("XDG_RUNTIME_DIR")
-		socket := "unix:" + sockDir + "/podman/podman.sock"
-
-		// Connect to Podman socket
-		connText, err := bindings.NewConnection(context.Background(), socket)
-		if err != nil {
-			log.Fatalln(err)
-		}
+		connText := utils.GetContext()
 
 		service := args[0]
 		switch service {
 		case "mysql":
+			containerName := "tent-mysql"
+
 			running := define.ContainerStateRunning
-			_, err = containers.Wait(connText, "tent-mysql", &running)
+			_, err := containers.Wait(*connText, containerName, &running)
 			if err != nil {
 				log.Fatalln(err)
 			}
 
-			// Container inspect
-			ctrData, err := containers.Inspect(connText, "tent-mysql", nil)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			fmt.Printf("Container uses image %s\n", ctrData.ImageName)
-			fmt.Printf("Container running status is %s\n", ctrData.State.Status)
-
-			// Container stop
-			fmt.Println("Stopping the container...")
-			err = containers.Stop(connText, "tent-mysql", nil)
-			if err != nil {
-				log.Fatalln(err)
-			}
+			utils.StopContainer(connText, containerName)
 		default:
-			fmt.Println("service name is required")
+			fmt.Println("invalid service name given")
 		}
 	},
 }

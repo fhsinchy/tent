@@ -23,7 +23,6 @@ import (
 
 	"github.com/containers/podman/v2/libpod/define"
 	"github.com/containers/podman/v2/pkg/bindings/containers"
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/spf13/cobra"
 )
 
@@ -49,6 +48,7 @@ to quickly create a Cobra application.`,
 		case "mysql":
 			tag := "latest"
 			password := "secret"
+			containerName := "tent-mysql"
 
 			if !isDefault {
 				var tagInput string
@@ -76,30 +76,17 @@ to quickly create a Cobra application.`,
 			env := make(map[string]string)
 			env["MYSQL_ROOT_PASSWORD"] = password
 
-			// Container create
-			s := specgen.NewSpecGenerator(rawImage, false)
-			s.Name = "tent-mysql"
-			s.Remove = true
-			s.Env = env
-			_, err := containers.CreateWithSpec(*connText, s)
-			if err != nil {
-				log.Fatalln(err)
-			}
+			utils.CreateContainer(connText, rawImage, env, containerName)
 
-			// Container start
-			fmt.Println("starting mysql container")
-			err = containers.Start(*connText, "tent-mysql", nil)
-			if err != nil {
-				log.Fatalln(err)
-			}
+			utils.StartContainer(connText, containerName)
 
 			running := define.ContainerStateRunning
-			_, err = containers.Wait(*connText, "tent-mysql", &running)
+			_, err := containers.Wait(*connText, containerName, &running)
 			if err != nil {
 				log.Fatalln(err)
 			}
 		default:
-			fmt.Println("service name is required")
+			fmt.Println("invalid service name given")
 		}
 	},
 }
