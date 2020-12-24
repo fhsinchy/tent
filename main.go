@@ -39,7 +39,26 @@ func main() {
 					switch service {
 					case "mysql":
 						tag := "latest"
-						password := "password"
+						password := "secret"
+
+						fmt.Println(c.FlagNames())
+
+						var tagInput string
+						var passwordInput string
+
+						fmt.Print("Which tag you want to use? (default: latest): ")
+						fmt.Scanln(&tagInput)
+
+						fmt.Print("Password for the root user? (default: secret): ")
+						fmt.Scanln(&passwordInput)
+
+						if tagInput != "" {
+							tag = tagInput
+						}
+
+						if passwordInput != "" {
+							password = passwordInput
+						}
 
 						rawImage := "docker.io/mysql:" + tag
 						fmt.Println("pulling mysql image")
@@ -107,11 +126,6 @@ func main() {
 						if err != nil {
 							log.Fatalln(err)
 						}
-						ctrData, err = containers.Inspect(connText, "tent-mysql", nil)
-						if err != nil {
-							log.Fatalln(err)
-						}
-						fmt.Printf("Container running status is now %s\n", ctrData.State.Status)
 					default:
 						fmt.Println("service name is required")
 					}
