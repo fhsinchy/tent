@@ -21,6 +21,8 @@ import (
 	"github.com/fhsinchy/tent/utils"
 
 	"github.com/spf13/cobra"
+
+	"github.com/containers/podman/v2/pkg/specgen"
 )
 
 var isDefault bool
@@ -46,16 +48,21 @@ to quickly create a Cobra application.`,
 			tag := "latest"
 			password := "secret"
 			containerName := "tent-mysql"
+			var hostPort uint16 = 3306
 
 			if !isDefault {
 				var tagInput string
 				var passwordInput string
+				var portInput uint16
 
 				fmt.Print("Which tag you want to use? (default: latest): ")
 				fmt.Scanln(&tagInput)
 
 				fmt.Print("Password for the root user? (default: secret): ")
 				fmt.Scanln(&passwordInput)
+
+				fmt.Print("Host system port? (default: 3306): ")
+				fmt.Scanln(&portInput)
 
 				if tagInput != "" {
 					tag = tagInput
@@ -64,6 +71,15 @@ to quickly create a Cobra application.`,
 				if passwordInput != "" {
 					password = passwordInput
 				}
+
+				if portInput != 0 {
+					hostPort = portInput
+				}
+			}
+
+			portMapping := specgen.PortMapping{
+				ContainerPort: 3306,
+				HostPort:      hostPort,
 			}
 
 			rawImage := "docker.io/mysql:" + tag
@@ -71,7 +87,7 @@ to quickly create a Cobra application.`,
 			env["MYSQL_ROOT_PASSWORD"] = password
 
 			utils.PullImage(connText, rawImage)
-			utils.CreateContainer(connText, rawImage, env, containerName)
+			utils.CreateContainer(connText, rawImage, env, containerName, portMapping)
 			utils.StartContainer(connText, containerName)
 		default:
 			fmt.Println("invalid service name given")

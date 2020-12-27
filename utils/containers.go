@@ -8,11 +8,12 @@ import (
 	"github.com/containers/podman/v2/pkg/specgen"
 )
 
-func CreateContainer(connText *context.Context, rawImage string, env map[string]string, containerName string) {
+func CreateContainer(connText *context.Context, rawImage string, env map[string]string, containerName string, portMapping specgen.PortMapping) {
 	s := specgen.NewSpecGenerator(rawImage, false)
-	s.Name = containerName
-	s.Remove = true
 	s.Env = env
+	s.Remove = true
+	s.Name = containerName
+	s.PortMappings = append(s.PortMappings, portMapping)
 	_, err := containers.CreateWithSpec(*connText, s)
 	if err != nil {
 		log.Fatalln(err)
