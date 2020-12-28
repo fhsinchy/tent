@@ -48,11 +48,13 @@ to quickly create a Cobra application.`,
 			tag := "latest"
 			password := "secret"
 			containerName := "tent-mysql"
+			volumeName := "tent-mysql-data"
 			var hostPort uint16 = 3306
 
 			if !isDefault {
 				var tagInput string
 				var passwordInput string
+				var volumeNameInput string
 				var portInput uint16
 
 				fmt.Print("Which tag you want to use? (default: latest): ")
@@ -60,6 +62,9 @@ to quickly create a Cobra application.`,
 
 				fmt.Print("Password for the root user? (default: secret): ")
 				fmt.Scanln(&passwordInput)
+
+				fmt.Print("Volume name for persisting data? (default: tent-mysql-data): ")
+				fmt.Scanln(&volumeNameInput)
 
 				fmt.Print("Host system port? (default: 3306): ")
 				fmt.Scanln(&portInput)
@@ -87,7 +92,7 @@ to quickly create a Cobra application.`,
 			env["MYSQL_ROOT_PASSWORD"] = password
 
 			utils.PullImage(connText, rawImage)
-			utils.CreateContainer(connText, rawImage, env, containerName, portMapping)
+			utils.CreateContainer(connText, rawImage, env, containerName, portMapping, volumeName)
 			utils.StartContainer(connText, containerName)
 		default:
 			fmt.Println("invalid service name given")

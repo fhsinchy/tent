@@ -8,13 +8,13 @@ import (
 	"github.com/containers/podman/v2/pkg/specgen"
 )
 
-func CreateContainer(connText *context.Context, rawImage string, env map[string]string, containerName string, portMapping specgen.PortMapping) {
+func CreateContainer(connText *context.Context, rawImage string, env map[string]string, containerName string, portMapping specgen.PortMapping, volumeName string) {
 	s := specgen.NewSpecGenerator(rawImage, false)
 	s.Env = env
 	s.Remove = true
 	s.Name = containerName
 	s.Volumes = append(s.Volumes, &specgen.NamedVolume{
-		Name: "tent-mysql-data",
+		Name: volumeName,
 		Dest: "/var/lib/mysql",
 	})
 	s.PortMappings = append(s.PortMappings, portMapping)
