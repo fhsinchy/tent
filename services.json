@@ -1,8 +1,0 @@
-{
-    "mysql" : {
-        "image" : "docker.io/mysql",
-        "env" : {
-            "MYSQL_ROOT_PASSWORD" : "secret"
-        }
-    }
-}
