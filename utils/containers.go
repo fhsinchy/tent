@@ -13,6 +13,10 @@ func CreateContainer(connText *context.Context, rawImage string, env map[string]
 	s.Env = env
 	s.Remove = true
 	s.Name = containerName
+	s.Volumes = append(s.Volumes, &specgen.NamedVolume{
+		Name: "tent-mysql-data",
+		Dest: "/var/lib/mysql",
+	})
 	s.PortMappings = append(s.PortMappings, portMapping)
 	_, err := containers.CreateWithSpec(*connText, s)
 	if err != nil {
