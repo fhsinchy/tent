@@ -30,13 +30,17 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "tent",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "Podman (https://podman.io/) based development-only dependency manager for Linux.",
+	Long: `Setting up different development dependencies such as MySQL, MongoDB or Redis has always been a pain for developers.
+Tent is a tool designed for making that process easier. It allows you to set-up several development dependencies by executing simple commands.
+i.e. the following command will start a functional MySQL server on your local system.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+$ tent start mysql --default
+
+Tent leverages the power of containerization for achieving it's goals. All the available services (as they are called inside tent) runs inside containers.
+These containers are created from OCI compliant images and use Podman as their container runtime.
+
+Tent is heavily inspired from tighten/takeout (https://github.com/tighten/takeout) and is an experimental project. Hence care should be taken if you're using it in a critical environment.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },

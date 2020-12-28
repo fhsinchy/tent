@@ -5,13 +5,13 @@ import (
 	"github.com/fhsinchy/tent/types"
 )
 
-var MySQL types.Service = types.Service{
-	Name:      "mysql",
-	Container: "tent-mysql",
-	Image:     "docker.io/mysql",
+var MariaDB types.Service = types.Service{
+	Name:      "mariadb",
+	Container: "tent-mariadb",
+	Image:     "docker.io/mariadb",
 	Tag:       "latest",
 	Volume: specgen.NamedVolume{
-		Name: "tent-mysql-data",
+		Name: "tent-mariadb-data",
 		Dest: "/var/lib/mysql",
 	},
 	PortMapping: specgen.PortMapping{

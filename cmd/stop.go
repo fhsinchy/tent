@@ -16,11 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-	"log"
+	"github.com/fhsinchy/tent/services"
+	"github.com/fhsinchy/tent/types"
 
-	"github.com/containers/podman/v2/libpod/define"
-	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/fhsinchy/tent/utils"
 	"github.com/spf13/cobra"
 )
@@ -28,44 +26,24 @@ import (
 // stopCmd represents the stop command
 var stopCmd = &cobra.Command{
 	Use:   "stop",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Stops a running service",
+	Long:  `The stop command stops a runnig service. The service container gets removed automatically once stopped.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 
 		service := args[0]
-		switch service {
-		case "mysql":
-			containerName := "tent-mysql"
 
-			running := define.ContainerStateRunning
-			_, err := containers.Wait(*connText, containerName, &running)
-			if err != nil {
-				log.Fatalln(err)
-			}
-
-			utils.StopContainer(connText, containerName)
-		default:
-			fmt.Println("invalid service name given")
+		var services = map[string]types.Service{
+			"mysql":      services.MySQL,
+			"mariadb":    services.MariaDB,
+			"phpmyadmin": services.PHPMyAdmin,
+			"redis":      services.Redis,
 		}
+
+		services[service].StopContainer(connText)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(stopCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// stopCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// stopCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
