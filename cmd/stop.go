@@ -31,8 +31,6 @@ var stopCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 
-		service := args[0]
-
 		var services = map[string]types.Service{
 			"mysql":      services.MySQL,
 			"mariadb":    services.MariaDB,
@@ -40,7 +38,11 @@ var stopCmd = &cobra.Command{
 			"redis":      services.Redis,
 		}
 
-		services[service].StopContainer(connText)
+		for i := 0; i < len(args); i++ {
+			service := args[i]
+
+			services[service].StopContainer(connText)
+		}
 	},
 }
 
