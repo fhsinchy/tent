@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/containers/podman/v2/libpod/define"
 	"github.com/containers/podman/v2/pkg/bindings/containers"
@@ -17,7 +18,6 @@ type Service struct {
 	Name        string
 	Image       string
 	Volume      specgen.NamedVolume
-	Container   string
 	PortMapping specgen.PortMapping
 	Env         map[string]string
 	HasVolumes  bool
@@ -38,7 +38,7 @@ func (service *Service) PullImage(connText *context.Context) {
 }
 
 func (service *Service) CreateContainer(connText *context.Context) {
-	exists, err := containers.Exists(*connText, service.Container, false)
+	exists, err := containers.Exists(*connText, service.GetContainerName(), false)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -48,7 +48,7 @@ func (service *Service) CreateContainer(connText *context.Context) {
 		s := specgen.NewSpecGenerator(service.Image+":"+service.Tag, false)
 		s.Env = service.Env
 		s.Remove = true
-		s.Name = service.Container
+		s.Name = service.GetContainerName()
 		s.PortMappings = append(s.PortMappings, service.PortMapping)
 
 		if service.HasVolumes {
@@ -63,13 +63,13 @@ func (service *Service) CreateContainer(connText *context.Context) {
 }
 
 func (service *Service) StartContainer(connText *context.Context) {
-	exists, err := containers.Exists(*connText, service.Container, false)
+	exists, err := containers.Exists(*connText, service.GetContainerName(), false)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	if exists {
 		fmt.Println("starting container...")
-		err := containers.Start(*connText, service.Container, nil)
+		err := containers.Start(*connText, service.GetContainerName(), nil)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -78,13 +78,19 @@ func (service *Service) StartContainer(connText *context.Context) {
 
 func (service Service) StopContainer(connText *context.Context) {
 	running := define.ContainerStateRunning
-	_, err := containers.Wait(*connText, service.Container, &running)
+	_, err := containers.Wait(*connText, service.GetContainerName(), &running)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	err = containers.Stop(*connText, service.Container, nil)
+	err = containers.Stop(*connText, service.GetContainerName(), nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func (service *Service) GetContainerName() string {
+	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMapping.HostPort))
+
+	return container
 }

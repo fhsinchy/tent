@@ -6,10 +6,9 @@ import (
 )
 
 var MariaDB types.Service = types.Service{
-	Name:      "mariadb",
-	Container: "tent-mariadb",
-	Image:     "docker.io/mariadb",
-	Tag:       "latest",
+	Name:  "mariadb",
+	Image: "docker.io/mariadb",
+	Tag:   "latest",
 	Volume: specgen.NamedVolume{
 		Name: "tent-mariadb-data",
 		Dest: "/var/lib/mysql",

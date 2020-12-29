@@ -6,10 +6,9 @@ import (
 )
 
 var MySQL types.Service = types.Service{
-	Name:      "mysql",
-	Container: "tent-mysql",
-	Image:     "docker.io/mysql",
-	Tag:       "latest",
+	Name:  "mysql",
+	Image: "docker.io/mysql",
+	Tag:   "latest",
 	Volume: specgen.NamedVolume{
 		Name: "tent-mysql-data",
 		Dest: "/var/lib/mysql",

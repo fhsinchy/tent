@@ -6,11 +6,10 @@ import (
 )
 
 var PHPMyAdmin types.Service = types.Service{
-	Name:      "phpmyadmin",
-	Container: "tent-phpmyadmin",
-	Image:     "docker.io/phpmyadmin",
-	Tag:       "latest",
-	Volume:    specgen.NamedVolume{},
+	Name:   "phpmyadmin",
+	Image:  "docker.io/phpmyadmin",
+	Tag:    "latest",
+	Volume: specgen.NamedVolume{},
 	PortMapping: specgen.PortMapping{
 		ContainerPort: 80,
 		HostPort:      8080,
