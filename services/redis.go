@@ -11,7 +11,6 @@ var Redis types.Service = types.Service{
 	Image: "docker.io/redis",
 	Tag:   "latest",
 	Volume: specgen.NamedVolume{
-		Name: "tent-redis-data",
 		Dest: "/data",
 	},
 	PortMapping: specgen.PortMapping{

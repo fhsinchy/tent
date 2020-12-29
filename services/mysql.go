@@ -11,7 +11,6 @@ var MySQL types.Service = types.Service{
 	Image: "docker.io/mysql",
 	Tag:   "latest",
 	Volume: specgen.NamedVolume{
-		Name: "tent-mysql-data",
 		Dest: "/var/lib/mysql",
 	},
 	PortMapping: specgen.PortMapping{

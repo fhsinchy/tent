@@ -32,7 +32,7 @@ func (service *Service) PullImage(connText *context.Context) {
 	}
 
 	if !exists {
-		fmt.Printf("Pulling %s image from registry...", service.Image)
+		fmt.Printf("Pulling %s image from registry...\n", service.Image)
 		_, err := images.Pull(*connText, service.Image, entities.ImagePullOptions{})
 		if err != nil {
 			log.Fatalln(err)
@@ -48,7 +48,7 @@ func (service *Service) CreateContainer(connText *context.Context) {
 	}
 
 	if !exists {
-		fmt.Printf("Creating %s container using %s image...", service.GetContainerName(), service.Image+service.Tag)
+		fmt.Printf("Creating %s container using %s image...\n", service.GetContainerName(), service.Image+":"+service.Tag)
 		s := specgen.NewSpecGenerator(service.Image+":"+service.Tag, false)
 		s.Env = service.Env
 		s.Remove = true
@@ -56,6 +56,7 @@ func (service *Service) CreateContainer(connText *context.Context) {
 		s.PortMappings = append(s.PortMappings, service.PortMapping)
 
 		if service.HasVolumes {
+			service.Volume.Name = service.GetVolumeName()
 			s.Volumes = append(s.Volumes, &service.Volume)
 		}
 
@@ -73,7 +74,7 @@ func (service *Service) StartContainer(connText *context.Context) {
 		log.Fatalln(err)
 	}
 	if exists {
-		fmt.Printf("Starting %s container...", service.GetContainerName())
+		fmt.Printf("Starting %s container...\n", service.GetContainerName())
 		err := containers.Start(*connText, service.GetContainerName(), nil)
 		if err != nil {
 			log.Fatalln(err)
@@ -89,6 +90,7 @@ func (service Service) StopContainer(connText *context.Context) {
 		log.Fatalln(err)
 	}
 
+	fmt.Printf("Stopping %s container...\n", service.GetContainerName())
 	err = containers.Stop(*connText, service.GetContainerName(), nil)
 	if err != nil {
 		log.Fatalln(err)

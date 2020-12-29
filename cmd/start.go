@@ -52,7 +52,7 @@ var startCmd = &cobra.Command{
 					fmt.Print("Password for the root user? (default: secret): ")
 					fmt.Scanln(&password)
 
-					fmt.Print("Volume name for persisting data? (default: tent-mysql-data): ")
+					fmt.Printf("Volume name for persisting data? (default: %s): ", services.MySQL.GetVolumeName())
 					fmt.Scanln(&volume)
 
 					fmt.Print("Host system port? (default: 3306): ")
@@ -63,9 +63,7 @@ var startCmd = &cobra.Command{
 					}
 
 					if password != "" {
-						services.MySQL.Env = map[string]string{
-							"MYSQL_ROOT_PASSWORD": password,
-						}
+						services.MySQL.Env["MYSQL_ROOT_PASSWORD"] = password
 					}
 
 					if port != 0 {
@@ -93,7 +91,7 @@ var startCmd = &cobra.Command{
 					fmt.Print("Password for the root user? (default: secret): ")
 					fmt.Scanln(&password)
 
-					fmt.Print("Volume name for persisting data? (default: tent-mariadb-data): ")
+					fmt.Printf("Volume name for persisting data? (default: %s): ", services.MariaDB.GetVolumeName())
 					fmt.Scanln(&volume)
 
 					fmt.Print("Host system port? (default: 3306): ")
@@ -104,9 +102,7 @@ var startCmd = &cobra.Command{
 					}
 
 					if password != "" {
-						services.MariaDB.Env = map[string]string{
-							"MYSQL_ROOT_PASSWORD": password,
-						}
+						services.MariaDB.Env["MYSQL_ROOT_PASSWORD"] = password
 					}
 
 					if port != 0 {
@@ -140,6 +136,45 @@ var startCmd = &cobra.Command{
 				services.PHPMyAdmin.PullImage(connText)
 				services.PHPMyAdmin.CreateContainer(connText)
 				services.PHPMyAdmin.StartContainer(connText)
+			case "postgres":
+				if !isDefault {
+					var tag string
+					var password string
+					var volume string
+					var port uint16
+
+					fmt.Print("Which tag you want to use? (default: latest): ")
+					fmt.Scanln(&tag)
+
+					fmt.Print("Password for the root user? (default: secret): ")
+					fmt.Scanln(&password)
+
+					fmt.Printf("Volume name for persisting data? (default: %s): ", services.Postgres.GetVolumeName())
+					fmt.Scanln(&volume)
+
+					fmt.Print("Host system port? (default: 3306): ")
+					fmt.Scanln(&port)
+
+					if tag != "" {
+						services.Postgres.Tag = tag
+					}
+
+					if password != "" {
+						services.Postgres.Env["POSTGRES_PASSWORD"] = password
+					}
+
+					if port != 0 {
+						services.Postgres.PortMapping.HostPort = port
+					}
+
+					if volume != "" {
+						services.Postgres.Volume.Name = volume
+					}
+				}
+
+				services.Postgres.PullImage(connText)
+				services.Postgres.CreateContainer(connText)
+				services.Postgres.StartContainer(connText)
 			case "redis":
 				if !isDefault {
 					var tag string
@@ -149,7 +184,7 @@ var startCmd = &cobra.Command{
 					fmt.Print("Which tag you want to use? (default: latest): ")
 					fmt.Scanln(&tag)
 
-					fmt.Print("Volume name for persisting data? (default: tent-redis-data): ")
+					fmt.Printf("Volume name for persisting data? (default: %s): ", services.Redis.GetVolumeName())
 					fmt.Scanln(&volume)
 
 					fmt.Print("Host system port? (default: 6379): ")
