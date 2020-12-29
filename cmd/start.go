@@ -70,6 +70,10 @@ var startCmd = &cobra.Command{
 				if port != 0 {
 					services.MySQL.PortMapping.HostPort = port
 				}
+
+				if volume != "" {
+					services.MySQL.Volume.Name = volume
+				}
 			}
 
 			services.MySQL.PullImage(connText)
