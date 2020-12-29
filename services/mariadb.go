@@ -21,4 +21,10 @@ var MariaDB types.Service = types.Service{
 		"MYSQL_ROOT_PASSWORD": "secret",
 	},
 	HasVolumes: true,
+	Prompts: map[string]bool{
+		"tag":      true,
+		"password": true,
+		"volume":   true,
+		"port":     true,
+	},
 }

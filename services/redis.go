@@ -19,4 +19,9 @@ var Redis types.Service = types.Service{
 	},
 	Env:        map[string]string{},
 	HasVolumes: true,
+	Prompts: map[string]bool{
+		"tag":    true,
+		"volume": true,
+		"port":   true,
+	},
 }

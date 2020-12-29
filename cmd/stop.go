@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var isAll bool
+
 // stopCmd represents the stop command
 var stopCmd = &cobra.Command{
 	Use:   "stop",
@@ -23,14 +25,22 @@ var stopCmd = &cobra.Command{
 			"redis":      services.Redis,
 		}
 
-		for i := 0; i < len(args); i++ {
-			service := args[i]
+		if isAll {
+			for _, instance := range services {
+				instance.StopContainer(connText)
+			}
+		} else {
+			for i := 0; i < len(args); i++ {
+				service := args[i]
 
-			services[service].StopContainer(connText)
+				services[service].StopContainer(connText)
+			}
 		}
 	},
 }
 
 func init() {
+	stopCmd.Flags().BoolVarP(&isAll, "all", "a", false, "stops all running services")
+
 	rootCmd.AddCommand(stopCmd)
 }

@@ -22,18 +22,21 @@ type Service struct {
 	PortMapping specgen.PortMapping
 	Env         map[string]string
 	HasVolumes  bool
+	Prompts     map[string]bool
 }
 
 // PullImage method pulls the image required for creating a service container from online registries if not found in local system.
 func (service *Service) PullImage(connText *context.Context) {
-	exists, err := images.Exists(*connText, service.Image)
+	exists, err := images.Exists(*connText, service.GetImageName())
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	fmt.Println(exists)
+
 	if !exists {
-		fmt.Printf("Pulling %s image from registry...\n", service.Image)
-		_, err := images.Pull(*connText, service.Image, entities.ImagePullOptions{})
+		fmt.Printf("Pulling %s image from registry...\n", service.GetImageName())
+		_, err := images.Pull(*connText, service.GetImageName(), entities.ImagePullOptions{})
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -48,8 +51,8 @@ func (service *Service) CreateContainer(connText *context.Context) {
 	}
 
 	if !exists {
-		fmt.Printf("Creating %s container using %s image...\n", service.GetContainerName(), service.Image+":"+service.Tag)
-		s := specgen.NewSpecGenerator(service.Image+":"+service.Tag, false)
+		fmt.Printf("Creating %s container using %s image...\n", service.GetContainerName(), service.GetImageName())
+		s := specgen.NewSpecGenerator(service.GetImageName(), false)
 		s.Env = service.Env
 		s.Remove = true
 		s.Name = service.GetContainerName()
@@ -79,21 +82,81 @@ func (service *Service) StartContainer(connText *context.Context) {
 		if err != nil {
 			log.Fatalln(err)
 		}
+
+		running := define.ContainerStateRunning
+		_, err = containers.Wait(*connText, service.GetContainerName(), &running)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 }
 
 // StopContainer method stops a running container by dispatching a SIGTERM signal.
 func (service Service) StopContainer(connText *context.Context) {
-	running := define.ContainerStateRunning
-	_, err := containers.Wait(*connText, service.GetContainerName(), &running)
+	exists, err := containers.Exists(*connText, service.GetContainerName(), false)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	fmt.Printf("Stopping %s container...\n", service.GetContainerName())
-	err = containers.Stop(*connText, service.GetContainerName(), nil)
-	if err != nil {
-		log.Fatalln(err)
+	if exists {
+		size := false
+		ins, err := containers.Inspect(*connText, service.GetContainerName(), &size)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if ins.State.Running {
+			fmt.Printf("Stopping %s container...\n", service.GetContainerName())
+			err := containers.Stop(*connText, service.GetContainerName(), nil)
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+	}
+}
+
+// ShowPrompt method presents user with user friendly prompts.
+func (service *Service) ShowPrompt() {
+	if service.Prompts["tag"] {
+		var tag string
+		fmt.Print("Which tag you want to use? (default: latest): ")
+		fmt.Scanln(&tag)
+		if tag != "" {
+			service.Tag = tag
+		}
+	}
+
+	if service.Prompts["port"] {
+		var port uint16
+		fmt.Print("Host system port? (default: 3306): ")
+		fmt.Scanln(&port)
+		if port != 0 {
+			service.PortMapping.HostPort = port
+		}
+	}
+
+	if service.Prompts["password"] {
+		keys := map[string]string{
+			"mysql":    "MYSQL_ROOT_PASSWORD",
+			"mariadb":  "MYSQL_ROOT_PASSWORD",
+			"postgres": "POSTGRES_PASSWORD",
+		}
+
+		var password string
+		fmt.Print("Password for the root user? (default: secret): ")
+		fmt.Scanln(&password)
+		if password != "" {
+			service.Env[keys[service.Name]] = password
+		}
+	}
+
+	if service.Prompts["volume"] {
+		var volume string
+		fmt.Printf("Volume name for persisting data? (default: %s): ", service.GetVolumeName())
+		fmt.Scanln(&volume)
+		if volume != "" {
+			service.Volume.Name = volume
+		}
 	}
 }
 
@@ -109,4 +172,11 @@ func (service *Service) GetVolumeName() string {
 	volume := service.GetContainerName() + "-" + "data"
 
 	return volume
+}
+
+// GetImageName method generates full image name for services by combining their image name and tag.
+func (service *Service) GetImageName() string {
+	image := service.Image + ":" + service.Tag
+
+	return image
 }

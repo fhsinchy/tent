@@ -26,38 +26,7 @@ var startCmd = &cobra.Command{
 			switch service {
 			case "mysql":
 				if !isDefault {
-					var tag string
-					var password string
-					var volume string
-					var port uint16
-
-					fmt.Print("Which tag you want to use? (default: latest): ")
-					fmt.Scanln(&tag)
-
-					fmt.Print("Password for the root user? (default: secret): ")
-					fmt.Scanln(&password)
-
-					fmt.Printf("Volume name for persisting data? (default: %s): ", services.MySQL.GetVolumeName())
-					fmt.Scanln(&volume)
-
-					fmt.Print("Host system port? (default: 3306): ")
-					fmt.Scanln(&port)
-
-					if tag != "" {
-						services.MySQL.Tag = tag
-					}
-
-					if password != "" {
-						services.MySQL.Env["MYSQL_ROOT_PASSWORD"] = password
-					}
-
-					if port != 0 {
-						services.MySQL.PortMapping.HostPort = port
-					}
-
-					if volume != "" {
-						services.MySQL.Volume.Name = volume
-					}
+					services.MySQL.ShowPrompt()
 				}
 
 				services.MySQL.PullImage(connText)
@@ -65,34 +34,7 @@ var startCmd = &cobra.Command{
 				services.MySQL.StartContainer(connText)
 			case "mariadb":
 				if !isDefault {
-					var tag string
-					var password string
-					var volume string
-					var port uint16
-
-					fmt.Print("Which tag you want to use? (default: latest): ")
-					fmt.Scanln(&tag)
-
-					fmt.Print("Password for the root user? (default: secret): ")
-					fmt.Scanln(&password)
-
-					fmt.Printf("Volume name for persisting data? (default: %s): ", services.MariaDB.GetVolumeName())
-					fmt.Scanln(&volume)
-
-					fmt.Print("Host system port? (default: 3306): ")
-					fmt.Scanln(&port)
-
-					if tag != "" {
-						services.MySQL.Tag = tag
-					}
-
-					if password != "" {
-						services.MariaDB.Env["MYSQL_ROOT_PASSWORD"] = password
-					}
-
-					if port != 0 {
-						services.MySQL.PortMapping.HostPort = port
-					}
+					services.MariaDB.ShowPrompt()
 				}
 
 				services.MariaDB.PullImage(connText)
@@ -100,22 +42,7 @@ var startCmd = &cobra.Command{
 				services.MariaDB.StartContainer(connText)
 			case "phpmyadmin":
 				if !isDefault {
-					var tag string
-					var port uint16
-
-					fmt.Print("Which tag you want to use? (default: latest): ")
-					fmt.Scanln(&tag)
-
-					fmt.Print("Host system port? (default: 8080): ")
-					fmt.Scanln(&port)
-
-					if tag != "" {
-						services.PHPMyAdmin.Tag = tag
-					}
-
-					if port != 0 {
-						services.PHPMyAdmin.PortMapping.HostPort = port
-					}
+					services.PHPMyAdmin.ShowPrompt()
 				}
 
 				services.PHPMyAdmin.PullImage(connText)
@@ -123,38 +50,7 @@ var startCmd = &cobra.Command{
 				services.PHPMyAdmin.StartContainer(connText)
 			case "postgres":
 				if !isDefault {
-					var tag string
-					var password string
-					var volume string
-					var port uint16
-
-					fmt.Print("Which tag you want to use? (default: latest): ")
-					fmt.Scanln(&tag)
-
-					fmt.Print("Password for the root user? (default: secret): ")
-					fmt.Scanln(&password)
-
-					fmt.Printf("Volume name for persisting data? (default: %s): ", services.Postgres.GetVolumeName())
-					fmt.Scanln(&volume)
-
-					fmt.Print("Host system port? (default: 3306): ")
-					fmt.Scanln(&port)
-
-					if tag != "" {
-						services.Postgres.Tag = tag
-					}
-
-					if password != "" {
-						services.Postgres.Env["POSTGRES_PASSWORD"] = password
-					}
-
-					if port != 0 {
-						services.Postgres.PortMapping.HostPort = port
-					}
-
-					if volume != "" {
-						services.Postgres.Volume.Name = volume
-					}
+					services.Postgres.ShowPrompt()
 				}
 
 				services.Postgres.PullImage(connText)
@@ -162,33 +58,14 @@ var startCmd = &cobra.Command{
 				services.Postgres.StartContainer(connText)
 			case "redis":
 				if !isDefault {
-					var tag string
-					var volume string
-					var port uint16
-
-					fmt.Print("Which tag you want to use? (default: latest): ")
-					fmt.Scanln(&tag)
-
-					fmt.Printf("Volume name for persisting data? (default: %s): ", services.Redis.GetVolumeName())
-					fmt.Scanln(&volume)
-
-					fmt.Print("Host system port? (default: 6379): ")
-					fmt.Scanln(&port)
-
-					if tag != "" {
-						services.Redis.Tag = tag
-					}
-
-					if port != 0 {
-						services.Redis.PortMapping.HostPort = port
-					}
+					services.Redis.ShowPrompt()
 				}
 
 				services.Redis.PullImage(connText)
 				services.Redis.CreateContainer(connText)
 				services.Redis.StartContainer(connText)
 			default:
-				fmt.Println("invalid service name given")
+				fmt.Printf("%s is not a valid service name\n", service)
 			}
 		}
 
