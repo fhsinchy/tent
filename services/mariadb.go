@@ -5,6 +5,7 @@ import (
 	"github.com/fhsinchy/tent/types"
 )
 
+// MariaDB service holds necessary data for creating and running the MariaDB container.
 var MariaDB types.Service = types.Service{
 	Name:  "mariadb",
 	Image: "docker.io/mariadb",

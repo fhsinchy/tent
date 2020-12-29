@@ -5,6 +5,7 @@ import (
 	"github.com/fhsinchy/tent/types"
 )
 
+// Redis service holds necessary data for creating and running the Redis container.
 var Redis types.Service = types.Service{
 	Name:  "redis",
 	Image: "docker.io/redis",

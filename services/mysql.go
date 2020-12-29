@@ -5,6 +5,7 @@ import (
 	"github.com/fhsinchy/tent/types"
 )
 
+// MySQL service holds necessary data for creating and running the MySQL container.
 var MySQL types.Service = types.Service{
 	Name:  "mysql",
 	Image: "docker.io/mysql",

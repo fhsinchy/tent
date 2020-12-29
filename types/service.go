@@ -13,6 +13,7 @@ import (
 	"github.com/containers/podman/v2/pkg/specgen"
 )
 
+// Service describes the properties and methods for a service like MySQL or Redis. All the available services in tent are uses this struct as their type.
 type Service struct {
 	Tag         string
 	Name        string
@@ -23,6 +24,7 @@ type Service struct {
 	HasVolumes  bool
 }
 
+// PullImage method pulls the image required for creating a service container from online registries if not found in local system.
 func (service *Service) PullImage(connText *context.Context) {
 	exists, err := images.Exists(*connText, service.Image)
 	if err != nil {
@@ -30,6 +32,7 @@ func (service *Service) PullImage(connText *context.Context) {
 	}
 
 	if !exists {
+		fmt.Printf("Pulling %s image from registry...", service.Image)
 		_, err := images.Pull(*connText, service.Image, entities.ImagePullOptions{})
 		if err != nil {
 			log.Fatalln(err)
@@ -37,6 +40,7 @@ func (service *Service) PullImage(connText *context.Context) {
 	}
 }
 
+// CreateContainer method creates a new container with using a given image pulled by PullImage method.
 func (service *Service) CreateContainer(connText *context.Context) {
 	exists, err := containers.Exists(*connText, service.GetContainerName(), false)
 	if err != nil {
@@ -44,7 +48,7 @@ func (service *Service) CreateContainer(connText *context.Context) {
 	}
 
 	if !exists {
-		fmt.Println("creating container...")
+		fmt.Printf("Creating %s container using %s image...", service.GetContainerName(), service.Image+service.Tag)
 		s := specgen.NewSpecGenerator(service.Image+":"+service.Tag, false)
 		s.Env = service.Env
 		s.Remove = true
@@ -62,13 +66,14 @@ func (service *Service) CreateContainer(connText *context.Context) {
 	}
 }
 
+// StartContainer method starts a given container created by the CreateContainer method.
 func (service *Service) StartContainer(connText *context.Context) {
 	exists, err := containers.Exists(*connText, service.GetContainerName(), false)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	if exists {
-		fmt.Println("starting container...")
+		fmt.Printf("Starting %s container...", service.GetContainerName())
 		err := containers.Start(*connText, service.GetContainerName(), nil)
 		if err != nil {
 			log.Fatalln(err)
@@ -76,6 +81,7 @@ func (service *Service) StartContainer(connText *context.Context) {
 	}
 }
 
+// StopContainer method stops a running container by dispatching a SIGTERM signal.
 func (service Service) StopContainer(connText *context.Context) {
 	running := define.ContainerStateRunning
 	_, err := containers.Wait(*connText, service.GetContainerName(), &running)
@@ -89,6 +95,7 @@ func (service Service) StopContainer(connText *context.Context) {
 	}
 }
 
+// GetContainerName method generates unique name for each container by combining their image tag and exposed port numbner.
 func (service *Service) GetContainerName() string {
 	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMapping.HostPort))
 

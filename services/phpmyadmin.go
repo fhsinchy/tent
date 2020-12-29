@@ -5,6 +5,7 @@ import (
 	"github.com/fhsinchy/tent/types"
 )
 
+// PHPMyAdmin service holds necessary data for creating and running the PHPMyAdmin container.
 var PHPMyAdmin types.Service = types.Service{
 	Name:   "phpmyadmin",
 	Image:  "docker.io/phpmyadmin",
