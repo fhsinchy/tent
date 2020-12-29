@@ -95,7 +95,7 @@ func (service Service) StopContainer(connText *context.Context) {
 	}
 }
 
-// GetContainerName method generates unique name for each container by combining their image tag and exposed port numbner.
+// GetContainerName method generates unique name for each container by combining their image tag and exposed port number.
 func (service *Service) GetContainerName() string {
 	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMapping.HostPort))
 
