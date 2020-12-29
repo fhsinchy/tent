@@ -101,3 +101,10 @@ func (service *Service) GetContainerName() string {
 
 	return container
 }
+
+// GetVolumeName method generates unique name for each volume used by different containers by using their container name.
+func (service *Service) GetVolumeName() string {
+	volume := service.GetContainerName() + "-" + "data"
+
+	return volume
+}
