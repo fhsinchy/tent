@@ -20,7 +20,9 @@ type Service struct {
 	Volume      specgen.NamedVolume
 	PortMapping specgen.PortMapping
 	Env         map[string]string
+	Command     []string
 	HasVolumes  bool
+	HasCommand  bool
 	Prompts     map[string]bool
 }
 
@@ -58,6 +60,10 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 			s.Volumes = append(s.Volumes, &service.Volume)
 		}
 
+		if service.HasCommand {
+			s.Command = service.Command
+		}
+
 		createResponse, err := containers.CreateWithSpec(*connText, s)
 		if err != nil {
 			log.Fatalln(err)
@@ -73,7 +79,7 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 func (service *Service) ShowPrompt() {
 	if service.Prompts["tag"] {
 		var tag string
-		fmt.Print("Which tag you want to use? (default: latest): ")
+		fmt.Printf("Which tag you want to use? (default: %s): ", service.Tag)
 		fmt.Scanln(&tag)
 		if tag != "" {
 			service.Tag = tag
@@ -89,15 +95,29 @@ func (service *Service) ShowPrompt() {
 		}
 	}
 
+	if service.Prompts["username"] {
+		keys := map[string]string{
+			"mongo": "MONGO_INITDB_ROOT_USERNAME",
+		}
+
+		var username string
+		fmt.Printf("Username for the root user? (default: %s): ", service.Env[keys[service.Name]])
+		fmt.Scanln(&username)
+		if username != "" {
+			service.Env[keys[service.Name]] = username
+		}
+	}
+
 	if service.Prompts["password"] {
 		keys := map[string]string{
 			"mysql":    "MYSQL_ROOT_PASSWORD",
 			"mariadb":  "MYSQL_ROOT_PASSWORD",
 			"postgres": "POSTGRES_PASSWORD",
+			"mongo":    "MONGO_INITDB_ROOT_PASSWORD",
 		}
 
 		var password string
-		fmt.Print("Password for the root user? (default: secret): ")
+		fmt.Printf("Password for the root user? (default: %s): ", service.Env[keys[service.Name]])
 		fmt.Scanln(&password)
 		if password != "" {
 			service.Env[keys[service.Name]] = password
