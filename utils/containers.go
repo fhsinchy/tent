@@ -68,3 +68,13 @@ func ListTentContainers(connText *context.Context) []entities.ListContainer {
 
 	return containerList
 }
+
+// FilterContainers function filters a list of entities.ListContainer type by running a given callback.
+func FilterContainers(collection []entities.ListContainer, callback func(entities.ListContainer) bool) (ret []entities.ListContainer) {
+	for _, item := range collection {
+		if callback(item) {
+			ret = append(ret, item)
+		}
+	}
+	return
+}

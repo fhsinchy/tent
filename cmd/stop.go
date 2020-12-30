@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/containers/podman/v2/pkg/domain/entities"
 	"github.com/fhsinchy/tent/utils"
 	"github.com/spf13/cobra"
 )
@@ -17,18 +19,48 @@ var stopCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 
-		if isAll {
-			for _, container := range utils.ListTentContainers(connText) {
-				utils.StopContainer(connText, container.ID)
+		if isAll && len(args) == 0 {
+			tentContainers := utils.ListTentContainers(connText)
+
+			if len(tentContainers) > 0 {
+				for _, container := range utils.ListTentContainers(connText) {
+					utils.StopContainer(connText, container.ID)
+				}
+			} else {
+				fmt.Println("no running service found")
 			}
 		} else {
 			for _, service := range args {
 				tentContainers := utils.ListTentContainers(connText)
 
-				for _, tentContainer := range tentContainers {
-					if service == strings.Split(tentContainer.Names[0], "-")[1] {
-						utils.StopContainer(connText, tentContainer.ID)
+				filteredTentContainers := utils.FilterContainers(tentContainers, func(s entities.ListContainer) bool { return service == strings.Split(s.Names[0], "-")[1] })
+
+				containerCount := len(filteredTentContainers)
+
+				if containerCount == 1 {
+					utils.StopContainer(connText, filteredTentContainers[0].ID)
+				} else if containerCount > 1 {
+					if isAll {
+						for _, tentContainer := range filteredTentContainers {
+							if service == strings.Split(tentContainer.Names[0], "-")[1] {
+								utils.StopContainer(connText, tentContainer.ID)
+							}
+						}
+					} else {
+						var choice int
+						fmt.Printf("multiple instances of %s service found:\n", service)
+						for index, tentContainer := range filteredTentContainers {
+							fmt.Printf("  %d --> %s\n", index, tentContainer.Names[0])
+						}
+						fmt.Println("you can execute 'tent stop --all' to stop all running services")
+						fmt.Printf("pick the instance you want to stop (0 - %d): ", containerCount-1)
+						fmt.Scanln(&choice)
+						if choice < containerCount {
+							utils.StopContainer(connText, filteredTentContainers[choice].ID)
+						}
 					}
+				} else {
+					fmt.Println("no running instance found for the given service")
 				}
 			}
 		}
