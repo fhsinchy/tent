@@ -22,7 +22,7 @@ i.e. the following command will start a functional MySQL server on your local sy
 
 $ tent start mysql --default
 
-Tent leverages the power of containerization for achieving it's goals. All the available services (as they are called inside tent) runs inside containers.
+Tent leverages the power of containerization for achieving it's goals. All the available services (as they are called inside tent) are just pre-configured containers.
 These containers are created from OCI compliant images and use Podman as their container runtime.
 
 Tent is heavily inspired from tighten/takeout (https://github.com/tighten/takeout) and is an experimental project. Hence care should be taken if you're using it in a critical environment.`,
