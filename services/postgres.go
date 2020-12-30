@@ -14,8 +14,8 @@ var Postgres types.Service = types.Service{
 		Dest: "/var/lib/postgresql/data",
 	},
 	PortMapping: specgen.PortMapping{
-		ContainerPort: 3306,
-		HostPort:      3306,
+		ContainerPort: 5432,
+		HostPort:      5432,
 	},
 	Env: map[string]string{
 		"POSTGRES_PASSWORD": "secret",
