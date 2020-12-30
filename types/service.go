@@ -34,7 +34,6 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 	}
 
 	if !imageExists {
-		fmt.Printf("Pulling %s image from registry...\n", service.GetImageName())
 		_, err := images.Pull(*connText, service.GetImageName(), entities.ImagePullOptions{})
 		if err != nil {
 			log.Fatalln(err)
@@ -83,7 +82,7 @@ func (service *Service) ShowPrompt() {
 
 	if service.Prompts["port"] {
 		var port uint16
-		fmt.Print("Host system port? (default: 3306): ")
+		fmt.Printf("Host system port? (default: %d): ", service.PortMapping.HostPort)
 		fmt.Scanln(&port)
 		if port != 0 {
 			service.PortMapping.HostPort = port
