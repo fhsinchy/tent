@@ -20,9 +20,7 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 
-		for i := 0; i < len(args); i++ {
-			service := args[i]
-
+		for _, service := range args {
 			switch service {
 			case "mysql":
 				if !isDefault {
