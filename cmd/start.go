@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/fhsinchy/tent/services"
+	"github.com/fhsinchy/tent/types"
 	"github.com/fhsinchy/tent/utils"
 
 	"github.com/spf13/cobra"
@@ -28,43 +29,27 @@ It also sets up necessary named volumes for persisting data.
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 
+		ss := map[string]*types.Service{
+			"mysql":         &services.MySQL,
+			"mariadb":       &services.MariaDB,
+			"phpmyadmin":    &services.PHPMyAdmin,
+			"postgres":      &services.Postgres,
+			"mongo":         &services.Mongo,
+			"mongo-express": &services.MongoExpress,
+			"redis":         &services.Redis,
+		}
+
 		for _, service := range args {
-			switch service {
-			case "mysql":
+			if s, ok := ss[service]; ok {
 				if !isDefault {
-					services.MySQL.ShowPrompt()
+					s.ShowPrompt()
 				}
 
-				utils.StartContainer(connText, services.MySQL.CreateContainer(connText))
-			case "mariadb":
-				if !isDefault {
-					services.MariaDB.ShowPrompt()
-				}
-
-				utils.StartContainer(connText, services.MariaDB.CreateContainer(connText))
-			case "phpmyadmin":
-				if !isDefault {
-					services.PHPMyAdmin.ShowPrompt()
-				}
-
-				utils.StartContainer(connText, services.PHPMyAdmin.CreateContainer(connText))
-			case "postgres":
-				if !isDefault {
-					services.Postgres.ShowPrompt()
-				}
-
-				utils.StartContainer(connText, services.Postgres.CreateContainer(connText))
-			case "redis":
-				if !isDefault {
-					services.Redis.ShowPrompt()
-				}
-
-				utils.StartContainer(connText, services.Redis.CreateContainer(connText))
-			default:
+				utils.StartContainer(connText, s.CreateContainer(connText))
+			} else {
 				fmt.Printf("%s is not a valid service name\n", service)
 			}
 		}
-
 	},
 }
 
