@@ -18,7 +18,6 @@ var PHPMyAdmin types.Service = types.Service{
 	Env: map[string]string{
 		"PMA_ARBITRARY": "1",
 	},
-	HasVolumes: false,
 	Prompts: map[string]bool{
 		"tag":  true,
 		"port": true,
