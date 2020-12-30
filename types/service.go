@@ -70,30 +70,6 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 	return containerID
 }
 
-// StopContainer method stops a running container by dispatching a SIGTERM signal.
-func (service Service) StopContainer(connText *context.Context) {
-	exists, err := containers.Exists(*connText, service.GetContainerName(), false)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if exists {
-		size := false
-		ins, err := containers.Inspect(*connText, service.GetContainerName(), &size)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		if ins.State.Running {
-			fmt.Printf("Stopping %s container...\n", service.GetContainerName())
-			err := containers.Stop(*connText, service.GetContainerName(), nil)
-			if err != nil {
-				log.Fatalln(err)
-			}
-		}
-	}
-}
-
 // ShowPrompt method presents user with user friendly prompts.
 func (service *Service) ShowPrompt() {
 	if service.Prompts["tag"] {
