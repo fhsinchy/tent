@@ -13,9 +13,18 @@ var isAll bool
 
 // stopCmd represents the stop command
 var stopCmd = &cobra.Command{
-	Use:   "stop",
+	Use:   "stop [service]",
 	Short: "Stops a running service",
-	Long:  `The stop command stops a runnig service. The service container gets removed automatically once stopped.`,
+	Long: `
+The stop command can stop running containers. This command can be used in following configurations:
+  
+  1. tent stop mysql ## stops a running mysql container
+  2. tent stop mysql --all ## stops all running mysql containers
+  3. tent stop --all ## stops all running containers
+
+Stopped containers will be automatically removed from your system.
+Volumes used for persisting data however, will be kept for later usage.
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 

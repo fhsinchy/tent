@@ -13,10 +13,18 @@ var isDefault bool
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
-	Use:   "start",
+	Use:   "start service",
 	Short: "Starts a new service",
-	Long:  `The start command starts a new service inside a container. It sets-up all necessary environment variables and volumes as well.`,
-	Args:  cobra.MinimumNArgs(1),
+	Long: `
+The start command can start new containers. This command can be used in following configurations:
+  
+  1. tent start mysql --default ## starts a new mysql container with default configuration
+  2. tent start mysql ## starts a new mysql container but prompts you for configuration
+
+The start command will take care of pulling images if not found in local registries.
+It also sets up necessary named volumes for persisting data.
+`,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 
