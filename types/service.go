@@ -6,7 +6,6 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/containers/podman/v2/libpod/define"
 	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/containers/podman/v2/pkg/bindings/images"
 	"github.com/containers/podman/v2/pkg/domain/entities"
@@ -25,32 +24,29 @@ type Service struct {
 	Prompts     map[string]bool
 }
 
-// PullImage method pulls the image required for creating a service container from online registries if not found in local system.
-func (service *Service) PullImage(connText *context.Context) {
-	exists, err := images.Exists(*connText, service.GetImageName())
+// CreateContainer method creates a new container with using a given image pulled by PullImage method.
+func (service *Service) CreateContainer(connText *context.Context) string {
+	var containerID string
+
+	imageExists, err := images.Exists(*connText, service.GetImageName())
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	fmt.Println(exists)
-
-	if !exists {
+	if !imageExists {
 		fmt.Printf("Pulling %s image from registry...\n", service.GetImageName())
 		_, err := images.Pull(*connText, service.GetImageName(), entities.ImagePullOptions{})
 		if err != nil {
 			log.Fatalln(err)
 		}
 	}
-}
 
-// CreateContainer method creates a new container with using a given image pulled by PullImage method.
-func (service *Service) CreateContainer(connText *context.Context) {
-	exists, err := containers.Exists(*connText, service.GetContainerName(), false)
+	containerExists, err := containers.Exists(*connText, service.GetContainerName(), false)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if !exists {
+	if !containerExists {
 		fmt.Printf("Creating %s container using %s image...\n", service.GetContainerName(), service.GetImageName())
 		s := specgen.NewSpecGenerator(service.GetImageName(), false)
 		s.Env = service.Env
@@ -63,32 +59,15 @@ func (service *Service) CreateContainer(connText *context.Context) {
 			s.Volumes = append(s.Volumes, &service.Volume)
 		}
 
-		_, err := containers.CreateWithSpec(*connText, s)
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}
-}
-
-// StartContainer method starts a given container created by the CreateContainer method.
-func (service *Service) StartContainer(connText *context.Context) {
-	exists, err := containers.Exists(*connText, service.GetContainerName(), false)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	if exists {
-		fmt.Printf("Starting %s container...\n", service.GetContainerName())
-		err := containers.Start(*connText, service.GetContainerName(), nil)
+		createResponse, err := containers.CreateWithSpec(*connText, s)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		running := define.ContainerStateRunning
-		_, err = containers.Wait(*connText, service.GetContainerName(), &running)
-		if err != nil {
-			log.Fatalln(err)
-		}
+		containerID = createResponse.ID
 	}
+
+	return containerID
 }
 
 // StopContainer method stops a running container by dispatching a SIGTERM signal.

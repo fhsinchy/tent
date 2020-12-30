@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"github.com/fhsinchy/tent/services"
-	"github.com/fhsinchy/tent/types"
+	"strings"
 
 	"github.com/fhsinchy/tent/utils"
 	"github.com/spf13/cobra"
@@ -18,22 +17,19 @@ var stopCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 
-		var services = map[string]types.Service{
-			"mysql":      services.MySQL,
-			"mariadb":    services.MariaDB,
-			"phpmyadmin": services.PHPMyAdmin,
-			"redis":      services.Redis,
-		}
-
 		if isAll {
-			for _, instance := range services {
-				instance.StopContainer(connText)
+			for _, container := range utils.ListTentContainers(connText) {
+				utils.StopContainer(connText, container.ID)
 			}
 		} else {
-			for i := 0; i < len(args); i++ {
-				service := args[i]
+			for _, service := range args {
+				tentContainers := utils.ListTentContainers(connText)
 
-				services[service].StopContainer(connText)
+				for _, tentContainer := range tentContainers {
+					if service == strings.Split(tentContainer.Names[0], "-")[1] {
+						utils.StopContainer(connText, tentContainer.ID)
+					}
+				}
 			}
 		}
 	},

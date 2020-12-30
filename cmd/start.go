@@ -29,41 +29,31 @@ var startCmd = &cobra.Command{
 					services.MySQL.ShowPrompt()
 				}
 
-				services.MySQL.PullImage(connText)
-				services.MySQL.CreateContainer(connText)
-				services.MySQL.StartContainer(connText)
+				utils.StartContainer(connText, services.MySQL.CreateContainer(connText))
 			case "mariadb":
 				if !isDefault {
 					services.MariaDB.ShowPrompt()
 				}
 
-				services.MariaDB.PullImage(connText)
-				services.MariaDB.CreateContainer(connText)
-				services.MariaDB.StartContainer(connText)
+				utils.StartContainer(connText, services.MariaDB.CreateContainer(connText))
 			case "phpmyadmin":
 				if !isDefault {
 					services.PHPMyAdmin.ShowPrompt()
 				}
 
-				services.PHPMyAdmin.PullImage(connText)
-				services.PHPMyAdmin.CreateContainer(connText)
-				services.PHPMyAdmin.StartContainer(connText)
+				utils.StartContainer(connText, services.PHPMyAdmin.CreateContainer(connText))
 			case "postgres":
 				if !isDefault {
 					services.Postgres.ShowPrompt()
 				}
 
-				services.Postgres.PullImage(connText)
-				services.Postgres.CreateContainer(connText)
-				services.Postgres.StartContainer(connText)
+				utils.StartContainer(connText, services.Postgres.CreateContainer(connText))
 			case "redis":
 				if !isDefault {
 					services.Redis.ShowPrompt()
 				}
 
-				services.Redis.PullImage(connText)
-				services.Redis.CreateContainer(connText)
-				services.Redis.StartContainer(connText)
+				utils.StartContainer(connText, services.Redis.CreateContainer(connText))
 			default:
 				fmt.Printf("%s is not a valid service name\n", service)
 			}
