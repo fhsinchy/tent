@@ -27,7 +27,7 @@ var stopCmd = &cobra.Command{
 					utils.StopContainer(connText, container.ID)
 				}
 			} else {
-				fmt.Println("no running service found")
+				fmt.Println("no running containers found")
 			}
 		} else {
 			for _, service := range args {
@@ -48,19 +48,19 @@ var stopCmd = &cobra.Command{
 						}
 					} else {
 						var choice int
-						fmt.Printf("multiple instances of %s service found:\n", service)
+						fmt.Printf("multiple %s containers found:\n", service)
 						for index, tentContainer := range filteredTentContainers {
 							fmt.Printf("  %d --> %s\n", index, tentContainer.Names[0])
 						}
-						fmt.Println("you can execute 'tent stop --all' to stop all running services")
-						fmt.Printf("pick the instance you want to stop (0 - %d): ", containerCount-1)
+						fmt.Println("you can execute 'tent stop --all' to stop all running containers")
+						fmt.Printf("pick the container you want to stop (0 - %d): ", containerCount-1)
 						fmt.Scanln(&choice)
 						if choice < containerCount {
 							utils.StopContainer(connText, filteredTentContainers[choice].ID)
 						}
 					}
 				} else {
-					fmt.Println("no running instance found for the given service")
+					fmt.Printf("no running %s container found", service)
 				}
 			}
 		}

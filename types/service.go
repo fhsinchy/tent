@@ -12,7 +12,7 @@ import (
 	"github.com/containers/podman/v2/pkg/specgen"
 )
 
-// Service describes the properties and methods for a service like MySQL or Redis. All the available services in tent are uses this struct as their type.
+// Service describes the properties and methods for a service like MySQL or Redis. All the available services in tent uses this struct as their type.
 type Service struct {
 	Tag         string
 	Name        string
