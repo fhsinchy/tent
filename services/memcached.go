@@ -19,8 +19,4 @@ var Memcached types.Service = types.Service{
 			},
 		},
 	},
-	Prompts: map[string]bool{
-		"tag":  true,
-		"port": true,
-	},
 }

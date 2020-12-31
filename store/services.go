@@ -7,12 +7,14 @@ import (
 
 // Services map holds a collection of all the available services.
 var Services = map[string]*types.Service{
-	"mysql":     &services.MySQL,
-	"mariadb":   &services.MariaDB,
-	"postgres":  &services.Postgres,
-	"postgis":   &services.PostGIS,
-	"mongo":     &services.Mongo,
-	"redis":     &services.Redis,
-	"memcached": &services.Memcached,
-	"mailhog":   &services.MailHog,
+	"mysql":         &services.MySQL,
+	"mariadb":       &services.MariaDB,
+	"postgres":      &services.Postgres,
+	"postgis":       &services.PostGIS,
+	"mongo":         &services.Mongo,
+	"redis":         &services.Redis,
+	"memcached":     &services.Memcached,
+	"mailhog":       &services.MailHog,
+	"elasticsearch": &services.ElasticSearch,
+	"meilisearch":   &services.MeiliSearch,
 }

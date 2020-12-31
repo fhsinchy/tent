@@ -31,10 +31,4 @@ var PostGIS types.Service = types.Service{
 		},
 	},
 	HasVolumes: true,
-	Prompts: map[string]bool{
-		"tag":      true,
-		"password": true,
-		"volume":   true,
-		"port":     true,
-	},
 }

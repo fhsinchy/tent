@@ -28,8 +28,4 @@ var PHPMyAdmin types.Service = types.Service{
 			Mutable: false,
 		},
 	},
-	Prompts: map[string]bool{
-		"tag":  true,
-		"port": true,
-	},
 }

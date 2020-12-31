@@ -112,7 +112,7 @@ func (service *Service) ShowPrompt() {
 		}
 	}
 
-	if service.Prompts["volume"] {
+	if service.HasVolumes {
 		var volume string
 		fmt.Printf("Volume name for persisting data? (default: %s): ", service.GetVolumeName())
 		fmt.Scanln(&volume)

@@ -27,8 +27,4 @@ var MailHog types.Service = types.Service{
 		},
 	},
 	HasVolumes: false,
-	Prompts: map[string]bool{
-		"tag":  true,
-		"port": true,
-	},
 }

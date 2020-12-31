@@ -39,11 +39,4 @@ var Mongo types.Service = types.Service{
 	Command:    []string{"--serviceExecutor", "adaptive"},
 	HasVolumes: true,
 	HasCommand: true,
-	Prompts: map[string]bool{
-		"tag":      true,
-		"password": true,
-		"volume":   true,
-		"port":     true,
-		"username": true,
-	},
 }
