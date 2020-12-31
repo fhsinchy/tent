@@ -8,7 +8,7 @@ import (
 // MicrosoftSQLServer service holds necessary data for creating and running the MicrosoftSQLServer container.
 var MicrosoftSQLServer types.Service = types.Service{
 	Name:  "mssql",
-	Image: "docker.io/mcr.microsoft.com/mssql/server",
+	Image: "mcr.microsoft.com/mssql/server",
 	Tag:   "latest",
 	PortMappings: []types.PortMapping{
 		{
