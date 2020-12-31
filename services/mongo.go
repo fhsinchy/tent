@@ -22,9 +22,19 @@ var Mongo types.Service = types.Service{
 			},
 		},
 	},
-	Env: map[string]string{
-		"MONGO_INITDB_ROOT_USERNAME": "admin",
-		"MONGO_INITDB_ROOT_PASSWORD": "secret",
+	Env: []types.EnvVar{
+		{
+			Name:    "Server Admin Username",
+			Key:     "MONGO_INITDB_ROOT_USERNAME",
+			Value:   "admin",
+			Mutable: true,
+		},
+		{
+			Name:    "Server Admin Password",
+			Key:     "MONGO_INITDB_ROOT_PASSWORD",
+			Value:   "secret",
+			Mutable: true,
+		},
 	},
 	Command:    []string{"--serviceExecutor", "adaptive"},
 	HasVolumes: true,

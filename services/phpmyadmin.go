@@ -20,8 +20,13 @@ var PHPMyAdmin types.Service = types.Service{
 			},
 		},
 	},
-	Env: map[string]string{
-		"PMA_ARBITRARY": "1",
+	Env: []types.EnvVar{
+		{
+			Name:    "Allow Connection to Arbitrary Servers",
+			Key:     "PMA_ARBITRARY",
+			Value:   "1",
+			Mutable: false,
+		},
 	},
 	Prompts: map[string]bool{
 		"tag":  true,

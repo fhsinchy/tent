@@ -22,8 +22,13 @@ var MariaDB types.Service = types.Service{
 			},
 		},
 	},
-	Env: map[string]string{
-		"MYSQL_ROOT_PASSWORD": "secret",
+	Env: []types.EnvVar{
+		{
+			Name:    "Server Root Password",
+			Key:     "MYSQL_ROOT_PASSWORD",
+			Value:   "secret",
+			Mutable: true,
+		},
 	},
 	HasVolumes: true,
 	Prompts: map[string]bool{

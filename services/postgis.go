@@ -22,8 +22,13 @@ var PostGIS types.Service = types.Service{
 			},
 		},
 	},
-	Env: map[string]string{
-		"POSTGRES_PASSWORD": "secret",
+	Env: []types.EnvVar{
+		{
+			Name:    "Server Root Password",
+			Key:     "POSTGRES_PASSWORD",
+			Value:   "secret",
+			Mutable: true,
+		},
 	},
 	HasVolumes: true,
 	Prompts: map[string]bool{

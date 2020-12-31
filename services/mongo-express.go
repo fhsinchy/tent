@@ -19,8 +19,13 @@ var MongoExpress types.Service = types.Service{
 			},
 		},
 	},
-	Env: map[string]string{
-		"ME_CONFIG_OPTIONS_EDITORTHEME": "ambiance",
+	Env: []types.EnvVar{
+		{
+			Name:    "Editor UI Theme",
+			Key:     "ME_CONFIG_OPTIONS_EDITORTHEME",
+			Value:   "ambiance",
+			Mutable: false,
+		},
 	},
 	Prompts: map[string]bool{
 		"tag":  true,

@@ -26,7 +26,7 @@ var MailHog types.Service = types.Service{
 			},
 		},
 	},
-	Env:        map[string]string{},
+	Env:        []types.EnvVar{},
 	HasVolumes: false,
 	Prompts: map[string]bool{
 		"tag":  true,

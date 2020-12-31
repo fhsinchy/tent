@@ -19,7 +19,7 @@ var Memcached types.Service = types.Service{
 			},
 		},
 	},
-	Env: map[string]string{},
+	Env: []types.EnvVar{},
 	Prompts: map[string]bool{
 		"tag":  true,
 		"port": true,

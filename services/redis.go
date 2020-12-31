@@ -22,7 +22,7 @@ var Redis types.Service = types.Service{
 			},
 		},
 	},
-	Env:        map[string]string{},
+	Env:        []types.EnvVar{},
 	HasVolumes: true,
 	Prompts: map[string]bool{
 		"tag":    true,
