@@ -23,7 +23,6 @@ type Service struct {
 	Command      []string
 	HasVolumes   bool
 	HasCommand   bool
-	Prompts      map[string]bool
 }
 
 // CreateContainer method creates a new container with using a given image pulled by PullImage method.
