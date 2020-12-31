@@ -13,9 +13,11 @@ var PostGIS types.Service = types.Service{
 	Volume: specgen.NamedVolume{
 		Dest: "/var/lib/postgis/data",
 	},
-	PortMapping: specgen.PortMapping{
-		ContainerPort: 5432,
-		HostPort:      5432,
+	PortMappings: []specgen.PortMapping{
+		{
+			ContainerPort: 5432,
+			HostPort:      5432,
+		},
 	},
 	Env: map[string]string{
 		"POSTGRES_PASSWORD": "secret",

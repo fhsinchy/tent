@@ -10,9 +10,11 @@ var MongoExpress types.Service = types.Service{
 	Name:  "mongo-express",
 	Image: "docker.io/mongo-express",
 	Tag:   "latest",
-	PortMapping: specgen.PortMapping{
-		ContainerPort: 8081,
-		HostPort:      8081,
+	PortMappings: []specgen.PortMapping{
+		{
+			ContainerPort: 8081,
+			HostPort:      8081,
+		},
 	},
 	Env: map[string]string{
 		"ME_CONFIG_OPTIONS_EDITORTHEME": "ambiance",

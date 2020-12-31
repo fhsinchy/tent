@@ -16,16 +16,16 @@ import (
 
 // Service describes the properties and methods for a service like MySQL or Redis. All the available services in tent uses this struct as their type.
 type Service struct {
-	Tag         string
-	Name        string
-	Image       string
-	Volume      specgen.NamedVolume
-	PortMapping specgen.PortMapping
-	Env         map[string]string
-	Command     []string
-	HasVolumes  bool
-	HasCommand  bool
-	Prompts     map[string]bool
+	Tag          string
+	Name         string
+	Image        string
+	Volume       specgen.NamedVolume
+	PortMappings []specgen.PortMapping
+	Env          map[string]string
+	Command      []string
+	HasVolumes   bool
+	HasCommand   bool
+	Prompts      map[string]bool
 }
 
 // CreateContainer method creates a new container with using a given image pulled by PullImage method.
@@ -55,7 +55,7 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 		s.Env = service.Env
 		s.Remove = true
 		s.Name = service.GetContainerName()
-		s.PortMappings = append(s.PortMappings, service.PortMapping)
+		s.PortMappings = service.PortMappings
 
 		if service.HasVolumes {
 			service.Volume.Name = service.GetVolumeName()

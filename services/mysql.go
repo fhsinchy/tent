@@ -13,9 +13,11 @@ var MySQL types.Service = types.Service{
 	Volume: specgen.NamedVolume{
 		Dest: "/var/lib/mysql",
 	},
-	PortMapping: specgen.PortMapping{
-		ContainerPort: 3306,
-		HostPort:      3306,
+	PortMappings: []specgen.PortMapping{
+		{
+			ContainerPort: 3306,
+			HostPort:      3306,
+		},
 	},
 	Env: map[string]string{
 		"MYSQL_ROOT_PASSWORD": "secret",

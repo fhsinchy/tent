@@ -13,9 +13,11 @@ var Mongo types.Service = types.Service{
 	Volume: specgen.NamedVolume{
 		Dest: "/data/db",
 	},
-	PortMapping: specgen.PortMapping{
-		ContainerPort: 27017,
-		HostPort:      27017,
+	PortMappings: []specgen.PortMapping{
+		{
+			ContainerPort: 27017,
+			HostPort:      27017,
+		},
 	},
 	Env: map[string]string{
 		"MONGO_INITDB_ROOT_USERNAME": "admin",
