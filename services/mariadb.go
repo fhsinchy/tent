@@ -5,21 +5,30 @@ import (
 	"github.com/fhsinchy/tent/types"
 )
 
+// MariaDB service holds necessary data for creating and running the MariaDB container.
 var MariaDB types.Service = types.Service{
-	Name:      "mariadb",
-	Container: "tent-mariadb",
-	Image:     "docker.io/mariadb",
-	Tag:       "latest",
+	Name:  "mariadb",
+	Image: "docker.io/mariadb",
+	Tag:   "latest",
 	Volume: specgen.NamedVolume{
-		Name: "tent-mariadb-data",
 		Dest: "/var/lib/mysql",
 	},
-	PortMapping: specgen.PortMapping{
-		ContainerPort: 3306,
-		HostPort:      3306,
+	PortMappings: []types.PortMapping{
+		{
+			Text: "Server Port",
+			Mapping: specgen.PortMapping{
+				ContainerPort: 3306,
+				HostPort:      3306,
+			},
+		},
 	},
-	Env: map[string]string{
-		"MYSQL_ROOT_PASSWORD": "secret",
+	Env: []types.EnvVar{
+		{
+			Text:    "Server Root Password",
+			Key:     "MYSQL_ROOT_PASSWORD",
+			Value:   "secret",
+			Mutable: true,
+		},
 	},
 	HasVolumes: true,
 }

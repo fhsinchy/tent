@@ -5,27 +5,27 @@ import (
 	"github.com/fhsinchy/tent/types"
 )
 
-// MySQL service holds necessary data for creating and running the MySQL container.
-var MySQL types.Service = types.Service{
-	Name:  "mysql",
-	Image: "docker.io/mysql",
+// PostGIS service holds necessary data for creating and running the PostGIS container.
+var PostGIS types.Service = types.Service{
+	Name:  "postgis",
+	Image: "docker.io/postgis/postgis",
 	Tag:   "latest",
 	Volume: specgen.NamedVolume{
-		Dest: "/var/lib/mysql",
+		Dest: "/var/lib/postgis/data",
 	},
 	PortMappings: []types.PortMapping{
 		{
 			Text: "Server Port",
 			Mapping: specgen.PortMapping{
-				ContainerPort: 3306,
-				HostPort:      3306,
+				ContainerPort: 5432,
+				HostPort:      5432,
 			},
 		},
 	},
 	Env: []types.EnvVar{
 		{
 			Text:    "Server Root Password",
-			Key:     "MYSQL_ROOT_PASSWORD",
+			Key:     "POSTGRES_PASSWORD",
 			Value:   "secret",
 			Mutable: true,
 		},

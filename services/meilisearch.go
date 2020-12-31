@@ -5,20 +5,20 @@ import (
 	"github.com/fhsinchy/tent/types"
 )
 
-// Redis service holds necessary data for creating and running the Redis container.
-var Redis types.Service = types.Service{
-	Name:  "redis",
-	Image: "docker.io/redis",
+// MeiliSearch service holds necessary data for creating and running the MeiliSearch container.
+var MeiliSearch types.Service = types.Service{
+	Name:  "meilisearch",
+	Image: "docker.io/getmeili/meilisearch",
 	Tag:   "latest",
 	Volume: specgen.NamedVolume{
-		Dest: "/data",
+		Dest: "/data.ms",
 	},
 	PortMappings: []types.PortMapping{
 		{
 			Text: "Server Port",
 			Mapping: specgen.PortMapping{
-				ContainerPort: 6379,
-				HostPort:      6379,
+				ContainerPort: 7700,
+				HostPort:      7700,
 			},
 		},
 	},
