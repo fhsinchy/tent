@@ -13,10 +13,13 @@ var MariaDB types.Service = types.Service{
 	Volume: specgen.NamedVolume{
 		Dest: "/var/lib/mysql",
 	},
-	PortMappings: []specgen.PortMapping{
+	PortMappings: []types.PortMapping{
 		{
-			ContainerPort: 3306,
-			HostPort:      3306,
+			Name: "Server Port",
+			Mapping: specgen.PortMapping{
+				ContainerPort: 3306,
+				HostPort:      3306,
+			},
 		},
 	},
 	Env: map[string]string{

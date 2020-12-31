@@ -11,10 +11,13 @@ var PHPMyAdmin types.Service = types.Service{
 	Image:  "docker.io/phpmyadmin",
 	Tag:    "latest",
 	Volume: specgen.NamedVolume{},
-	PortMappings: []specgen.PortMapping{
+	PortMappings: []types.PortMapping{
 		{
-			ContainerPort: 80,
-			HostPort:      8080,
+			Name: "Server Port",
+			Mapping: specgen.PortMapping{
+				ContainerPort: 80,
+				HostPort:      8080,
+			},
 		},
 	},
 	Env: map[string]string{

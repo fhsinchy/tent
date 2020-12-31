@@ -20,7 +20,7 @@ type Service struct {
 	Name         string
 	Image        string
 	Volume       specgen.NamedVolume
-	PortMappings []specgen.PortMapping
+	PortMappings []PortMapping
 	Env          map[string]string
 	Command      []string
 	HasVolumes   bool
@@ -55,7 +55,10 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 		s.Env = service.Env
 		s.Remove = true
 		s.Name = service.GetContainerName()
-		s.PortMappings = service.PortMappings
+
+		for _, mapping := range service.PortMappings {
+			s.PortMappings = append(s.PortMappings, mapping.Mapping)
+		}
 
 		if service.HasVolumes {
 			service.Volume.Name = service.GetVolumeName()
@@ -79,21 +82,19 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 
 // ShowPrompt method presents user with user friendly prompts.
 func (service *Service) ShowPrompt() {
-	if service.Prompts["tag"] {
-		var tag string
-		fmt.Printf("Which tag you want to use? (default: %s): ", service.Tag)
-		fmt.Scanln(&tag)
-		if tag != "" {
-			service.Tag = tag
-		}
+	var tag string
+	fmt.Printf("Which tag do you want to use? (default: %s): ", service.Tag)
+	fmt.Scanln(&tag)
+	if tag != "" {
+		service.Tag = tag
 	}
 
-	if service.Prompts["port"] {
+	for index, mapping := range service.PortMappings {
 		var port uint16
-		fmt.Printf("Host system port? (default: %d): ", service.PortMapping.HostPort)
+		fmt.Printf("Host system port to be used as %s? (default: %d): ", mapping.Name, mapping.Mapping.HostPort)
 		fmt.Scanln(&port)
 		if port != 0 {
-			service.PortMapping.HostPort = port
+			service.PortMappings[index].Mapping.HostPort = port
 		}
 	}
 
@@ -127,7 +128,7 @@ func (service *Service) ShowPrompt() {
 
 // GetContainerName method generates unique name for each container by combining their image tag and exposed port number.
 func (service *Service) GetContainerName() string {
-	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMapping.HostPort))
+	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMappings[0].Mapping.HostPort))
 
 	return container
 }

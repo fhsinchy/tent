@@ -13,10 +13,13 @@ var Redis types.Service = types.Service{
 	Volume: specgen.NamedVolume{
 		Dest: "/data",
 	},
-	PortMappings: []specgen.PortMapping{
+	PortMappings: []types.PortMapping{
 		{
-			ContainerPort: 6379,
-			HostPort:      6379,
+			Name: "Server Port",
+			Mapping: specgen.PortMapping{
+				ContainerPort: 6379,
+				HostPort:      6379,
+			},
 		},
 	},
 	Env:        map[string]string{},

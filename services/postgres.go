@@ -13,10 +13,13 @@ var Postgres types.Service = types.Service{
 	Volume: specgen.NamedVolume{
 		Dest: "/var/lib/postgresql/data",
 	},
-	PortMappings: []specgen.PortMapping{
+	PortMappings: []types.PortMapping{
 		{
-			ContainerPort: 5432,
-			HostPort:      5432,
+			Name: "Server Port",
+			Mapping: specgen.PortMapping{
+				ContainerPort: 5432,
+				HostPort:      5432,
+			},
 		},
 	},
 	Env: map[string]string{

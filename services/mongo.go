@@ -13,10 +13,13 @@ var Mongo types.Service = types.Service{
 	Volume: specgen.NamedVolume{
 		Dest: "/data/db",
 	},
-	PortMappings: []specgen.PortMapping{
+	PortMappings: []types.PortMapping{
 		{
-			ContainerPort: 27017,
-			HostPort:      27017,
+			Name: "Server Port",
+			Mapping: specgen.PortMapping{
+				ContainerPort: 27017,
+				HostPort:      27017,
+			},
 		},
 	},
 	Env: map[string]string{

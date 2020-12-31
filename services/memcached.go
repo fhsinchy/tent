@@ -10,10 +10,13 @@ var Memcached types.Service = types.Service{
 	Name:  "memcached",
 	Image: "docker.io/memcached",
 	Tag:   "latest",
-	PortMappings: []specgen.PortMapping{
+	PortMappings: []types.PortMapping{
 		{
-			ContainerPort: 11211,
-			HostPort:      11211,
+			Name: "Server Port",
+			Mapping: specgen.PortMapping{
+				ContainerPort: 11211,
+				HostPort:      11211,
+			},
 		},
 	},
 	Env: map[string]string{},

@@ -14,4 +14,5 @@ var Services = map[string]*types.Service{
 	"mongo":     &services.Mongo,
 	"redis":     &services.Redis,
 	"memcached": &services.Memcached,
+	"mailhog":   &services.MailHog,
 }
