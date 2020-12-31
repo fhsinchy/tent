@@ -17,4 +17,5 @@ var Services = map[string]*types.Service{
 	"mailhog":       &services.MailHog,
 	"elasticsearch": &services.ElasticSearch,
 	"meilisearch":   &services.MeiliSearch,
+	"dynamodb":      &services.DynamoDB,
 }
