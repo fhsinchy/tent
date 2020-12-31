@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/fhsinchy/tent/store"
+	"github.com/fhsinchy/tent/config"
 
 	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/containers/podman/v2/pkg/bindings/images"
@@ -99,19 +99,19 @@ func (service *Service) ShowPrompt() {
 
 	if service.Prompts["username"] {
 		var username string
-		fmt.Printf("Username for the root user? (default: %s): ", service.Env[store.Envs[service.Name]["username"]])
+		fmt.Printf("Username for the root user? (default: %s): ", service.Env[config.Envs[service.Name]["username"]])
 		fmt.Scanln(&username)
 		if username != "" {
-			service.Env[store.Envs[service.Name]["username"]] = username
+			service.Env[config.Envs[service.Name]["username"]] = username
 		}
 	}
 
 	if service.Prompts["password"] {
 		var password string
-		fmt.Printf("Password for the root user? (default: %s): ", service.Env[store.Envs[service.Name]["password"]])
+		fmt.Printf("Password for the root user? (default: %s): ", service.Env[config.Envs[service.Name]["password"]])
 		fmt.Scanln(&password)
 		if password != "" {
-			service.Env[store.Envs[service.Name]["password"]] = password
+			service.Env[config.Envs[service.Name]["password"]] = password
 		}
 	}
 

@@ -3,8 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/fhsinchy/tent/services"
-	"github.com/fhsinchy/tent/types"
+	"github.com/fhsinchy/tent/store"
 	"github.com/fhsinchy/tent/utils"
 
 	"github.com/spf13/cobra"
@@ -29,16 +28,8 @@ It also sets up necessary named volumes for persisting data.
 	Run: func(cmd *cobra.Command, args []string) {
 		connText := utils.GetContext()
 
-		ss := map[string]*types.Service{
-			"mysql":    &services.MySQL,
-			"mariadb":  &services.MariaDB,
-			"postgres": &services.Postgres,
-			"mongo":    &services.Mongo,
-			"redis":    &services.Redis,
-		}
-
 		for _, service := range args {
-			if s, ok := ss[service]; ok {
+			if s, ok := store.Services[service]; ok {
 				if !isDefault {
 					s.ShowPrompt()
 				}

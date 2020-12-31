@@ -1,6 +1,6 @@
-package store
+package config
 
-// Envs map holds the information for nevironment variables.
+// Envs map holds the environment variable configuration for the services.
 var Envs = map[string]map[string]string{
 	"mongo": {
 		"username": "MONGO_INITDB_ROOT_USERNAME",
