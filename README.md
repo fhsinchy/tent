@@ -34,6 +34,44 @@ systemctl --user disable podman.socket
 
 Tent assumes that you're running the service in non-root mode, hence the `--user` argument is necessary in the above commands.
 
+## Installation
+
+Visit the [tent release page](https://github.com/fhsinchy/tent/releases/) and download the `tent` binary to your computer. Open up your terminal where you're donwloaded the file and execute following commands:
+
+```bash
+chmod +x ./tent
+
+sudo mv ./tent /usr/local/bin
+```
+
+Now the `tent` command should be available everywhere in your system.
+
+## Build From Source
+
+If you're on a Fedora system, the following command should install the necessary development dependencies.
+
+```bash
+sudo dnf groupinstall "Development Tools" -y && sudo dnf install golang btrfs-progs-devel gpgme-devel device-mapper-devel -y
+```
+
+And on a Ubuntu system, the following command should install the necessary development dependencies.
+
+```bash
+sudo apt install build-essential golang-go libbtrfs-dev libgpgme-dev libdevmapper-dev -y
+```
+
+If you're on a different system you, may look for equivalent package on the respective package repositories.
+
+Now build and install the application as follows:
+
+```bash
+git clone https://github.com/fhsinchy/tent.git ~/tent
+
+cd ~/tent
+
+make install
+```
+
 ## Usage
 
 The `tent` binary has following commands:
@@ -122,19 +160,3 @@ Now, if you run `tent list`, you'll see both services running at the same time.
 ## Container Management
 
 Containers started by `tent` are regular containers with some pre-set configurations. So you can use regular `podman` commands such as `ls`, `inspect`, `logs` etc on them. Although `tent` comes with a `list` command, using the `podman` commands will result in more informative results. The target of `tent` is to provide plug and play containers, not to become a full-fledged `podman` cli.
-
-## Development Dependencies
-
-If you're on a Fedora system, the following command should install the necessary development dependencies.
-
-```bash
-sudo dnf install btrfs-progs-devel gpgme-devel device-mapper-devel -y
-```
-
-And on a Ubuntu system, the following command should install the necessary development dependencies.
-
-```bash
-sudo apt install libbtrfs-dev libgpgme-dev libdevmapper-dev -y
-```
-
-If you're on a different system you, may look for equivalent package on the respective package repositories.
