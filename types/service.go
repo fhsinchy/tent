@@ -6,6 +6,8 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/fhsinchy/tent/store"
+
 	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/containers/podman/v2/pkg/bindings/images"
 	"github.com/containers/podman/v2/pkg/domain/entities"
@@ -96,31 +98,20 @@ func (service *Service) ShowPrompt() {
 	}
 
 	if service.Prompts["username"] {
-		keys := map[string]string{
-			"mongo": "MONGO_INITDB_ROOT_USERNAME",
-		}
-
 		var username string
-		fmt.Printf("Username for the root user? (default: %s): ", service.Env[keys[service.Name]])
+		fmt.Printf("Username for the root user? (default: %s): ", service.Env[store.Envs[service.Name]["username"]])
 		fmt.Scanln(&username)
 		if username != "" {
-			service.Env[keys[service.Name]] = username
+			service.Env[store.Envs[service.Name]["username"]] = username
 		}
 	}
 
 	if service.Prompts["password"] {
-		keys := map[string]string{
-			"mysql":    "MYSQL_ROOT_PASSWORD",
-			"mariadb":  "MYSQL_ROOT_PASSWORD",
-			"postgres": "POSTGRES_PASSWORD",
-			"mongo":    "MONGO_INITDB_ROOT_PASSWORD",
-		}
-
 		var password string
-		fmt.Printf("Password for the root user? (default: %s): ", service.Env[keys[service.Name]])
+		fmt.Printf("Password for the root user? (default: %s): ", service.Env[store.Envs[service.Name]["password"]])
 		fmt.Scanln(&password)
 		if password != "" {
-			service.Env[keys[service.Name]] = password
+			service.Env[store.Envs[service.Name]["password"]] = password
 		}
 	}
 
