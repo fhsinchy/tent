@@ -94,7 +94,7 @@ func (service *Service) ShowPrompt() {
 
 	for index, mapping := range service.PortMappings {
 		var port uint16
-		fmt.Printf("Host system port to be used as %s? (default: %d): ", mapping.Name, mapping.Mapping.HostPort)
+		fmt.Printf("%s? (default: %d): ", mapping.Text, mapping.Mapping.HostPort)
 		fmt.Scanln(&port)
 		if port != 0 {
 			service.PortMappings[index].Mapping.HostPort = port
@@ -104,7 +104,7 @@ func (service *Service) ShowPrompt() {
 	for index, env := range service.Env {
 		if env.Mutable {
 			var value string
-			fmt.Printf("%s? (default: %s): ", env.Name, env.Value)
+			fmt.Printf("%s? (default: %s): ", env.Text, env.Value)
 			fmt.Scanln(&value)
 			if value != "" {
 				service.Env[index].Value = value

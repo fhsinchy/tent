@@ -13,7 +13,7 @@ var PHPMyAdmin types.Service = types.Service{
 	Volume: specgen.NamedVolume{},
 	PortMappings: []types.PortMapping{
 		{
-			Name: "Server Port",
+			Text: "Server Port",
 			Mapping: specgen.PortMapping{
 				ContainerPort: 80,
 				HostPort:      8080,
@@ -22,7 +22,7 @@ var PHPMyAdmin types.Service = types.Service{
 	},
 	Env: []types.EnvVar{
 		{
-			Name:    "Allow Connection to Arbitrary Servers",
+			Text:    "Allow Connection to Arbitrary Servers",
 			Key:     "PMA_ARBITRARY",
 			Value:   "1",
 			Mutable: false,

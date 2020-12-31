@@ -12,21 +12,20 @@ var MailHog types.Service = types.Service{
 	Tag:   "latest",
 	PortMappings: []types.PortMapping{
 		{
-			Name: "Server Port",
+			Text: "Server Port",
 			Mapping: specgen.PortMapping{
 				ContainerPort: 1025,
 				HostPort:      1025,
 			},
 		},
 		{
-			Name: "Web UI Port",
+			Text: "Web UI Port",
 			Mapping: specgen.PortMapping{
 				ContainerPort: 8025,
 				HostPort:      8025,
 			},
 		},
 	},
-	Env:        []types.EnvVar{},
 	HasVolumes: false,
 	Prompts: map[string]bool{
 		"tag":  true,

@@ -12,7 +12,7 @@ var MongoExpress types.Service = types.Service{
 	Tag:   "latest",
 	PortMappings: []types.PortMapping{
 		{
-			Name: "Server Port",
+			Text: "Server Port",
 			Mapping: specgen.PortMapping{
 				ContainerPort: 8081,
 				HostPort:      8081,
@@ -21,7 +21,7 @@ var MongoExpress types.Service = types.Service{
 	},
 	Env: []types.EnvVar{
 		{
-			Name:    "Editor UI Theme",
+			Text:    "Editor UI Theme",
 			Key:     "ME_CONFIG_OPTIONS_EDITORTHEME",
 			Value:   "ambiance",
 			Mutable: false,

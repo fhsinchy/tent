@@ -15,14 +15,13 @@ var Redis types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Name: "Server Port",
+			Text: "Server Port",
 			Mapping: specgen.PortMapping{
 				ContainerPort: 6379,
 				HostPort:      6379,
 			},
 		},
 	},
-	Env:        []types.EnvVar{},
 	HasVolumes: true,
 	Prompts: map[string]bool{
 		"tag":    true,

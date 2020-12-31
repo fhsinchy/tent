@@ -12,14 +12,13 @@ var Memcached types.Service = types.Service{
 	Tag:   "latest",
 	PortMappings: []types.PortMapping{
 		{
-			Name: "Server Port",
+			Text: "Server Port",
 			Mapping: specgen.PortMapping{
 				ContainerPort: 11211,
 				HostPort:      11211,
 			},
 		},
 	},
-	Env: []types.EnvVar{},
 	Prompts: map[string]bool{
 		"tag":  true,
 		"port": true,

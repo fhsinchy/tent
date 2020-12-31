@@ -15,7 +15,7 @@ var MySQL types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Name: "Server Port",
+			Text: "Server Port",
 			Mapping: specgen.PortMapping{
 				ContainerPort: 3306,
 				HostPort:      3306,
@@ -24,7 +24,7 @@ var MySQL types.Service = types.Service{
 	},
 	Env: []types.EnvVar{
 		{
-			Name:    "Server Root Password",
+			Text:    "Server Root Password",
 			Key:     "MYSQL_ROOT_PASSWORD",
 			Value:   "secret",
 			Mutable: true,

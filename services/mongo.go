@@ -15,7 +15,7 @@ var Mongo types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Name: "Server Port",
+			Text: "Server Port",
 			Mapping: specgen.PortMapping{
 				ContainerPort: 27017,
 				HostPort:      27017,
@@ -24,13 +24,13 @@ var Mongo types.Service = types.Service{
 	},
 	Env: []types.EnvVar{
 		{
-			Name:    "Server Admin Username",
+			Text:    "Server Admin Username",
 			Key:     "MONGO_INITDB_ROOT_USERNAME",
 			Value:   "admin",
 			Mutable: true,
 		},
 		{
-			Name:    "Server Admin Password",
+			Text:    "Server Admin Password",
 			Key:     "MONGO_INITDB_ROOT_PASSWORD",
 			Value:   "secret",
 			Mutable: true,
