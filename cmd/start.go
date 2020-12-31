@@ -30,13 +30,11 @@ It also sets up necessary named volumes for persisting data.
 		connText := utils.GetContext()
 
 		ss := map[string]*types.Service{
-			"mysql":         &services.MySQL,
-			"mariadb":       &services.MariaDB,
-			"phpmyadmin":    &services.PHPMyAdmin,
-			"postgres":      &services.Postgres,
-			"mongo":         &services.Mongo,
-			"mongo-express": &services.MongoExpress,
-			"redis":         &services.Redis,
+			"mysql":    &services.MySQL,
+			"mariadb":  &services.MariaDB,
+			"postgres": &services.Postgres,
+			"mongo":    &services.Mongo,
+			"redis":    &services.Redis,
 		}
 
 		for _, service := range args {
