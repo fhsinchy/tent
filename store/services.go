@@ -10,6 +10,7 @@ var Services = map[string]*types.Service{
 	"mysql":     &services.MySQL,
 	"mariadb":   &services.MariaDB,
 	"postgres":  &services.Postgres,
+	"postgis":   &services.PostGIS,
 	"mongo":     &services.Mongo,
 	"redis":     &services.Redis,
 	"memcached": &services.Memcached,
