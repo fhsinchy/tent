@@ -6,7 +6,7 @@ Running containers then can be accessed via their exposed ports and can be paire
 
 Starting a service as simple executing `tent start mysql` and you'll never have to look back at it.
 
-But the `mysql` is not the only available service. A list of all the available services can be found on: https://github.com/fhsinchy/tent/blob/master/store/services.go
+But the `mysql` is not the only available service. A list of all the available services can be found on: [services.go](https://github.com/fhsinchy/tent/blob/master/store/services.go)
 
 Tent is heavily inspired from [tighten/takeout](https://github.com/tighten/takeout) and is an experimental project. Hence, care should be taken if you're using it in a critical environment.
 
@@ -165,7 +165,7 @@ Containers started by `tent` are regular containers with some pre-set configurat
 
 Although `tent` is in a stable state right now, there things that I'll have to do. A tentative list is as follows:
 
-[ ] Write Tests (very important)
-[ ] Set-up proper versioning.
+* [ ] Write Tests (very important)
+* [ ] Set-up proper versioning.
 
 That's all for now, this list will certainly change as I keep going working on my project.
