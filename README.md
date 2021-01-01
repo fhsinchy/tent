@@ -160,3 +160,12 @@ Now, if you run `tent list`, you'll see both services running at the same time.
 ## Container Management
 
 Containers started by `tent` are regular containers with some pre-set configurations. So you can use regular `podman` commands such as `ls`, `inspect`, `logs` etc on them. Although `tent` comes with a `list` command, using the `podman` commands will result in more informative results. The target of `tent` is to provide plug and play containers, not to become a full-fledged `podman` cli.
+
+## Todo
+
+Although `tent` is in a stable state right now, there things that I'll have to do. A tentative list is as follows:
+
+[ ] Write Tests (very important)
+[ ] Set-up proper versioning.
+
+That's all for now, this list will certainly change as I keep going working on my project.
