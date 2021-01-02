@@ -1,12 +1,12 @@
 # tent
 
-Tent is a CLI tool for running development dependencies such as MySQL, Mongo, ElasticSearch etc within pre-configured containers using simple one-liners.
+Tent is a CLI tool for running development dependencies such as MySQL, Mongo, ElasticSearch etc inside pre-configured containers using simple one-liners.
 
-Running containers then can be accessed via their exposed ports and can be paired with any application that you may be working on at the moment.
+Running containers can be accessed via their exposed ports and can be paired with any other application on your system.
 
-Starting a service as simple executing `tent start mysql` and you'll never have to look back at it.
+Starting a service such as `mysql` is as simple as executing `tent start mysql` and you'll never have to look back at it.
 
-But the `mysql` is not the only available service. A list of all the available services can be found on: [services.go](https://github.com/fhsinchy/tent/blob/master/store/services.go)
+But `mysql` is not the only available service. A list of all the available services can be found on: [services.go](https://github.com/fhsinchy/tent/blob/master/store/services.go)
 
 Tent is heavily inspired from [tighten/takeout](https://github.com/tighten/takeout) and is an experimental project. Hence, care should be taken if you're using it in a critical environment.
 
@@ -36,7 +36,7 @@ Tent assumes that you're running the service in non-root mode, hence the `--user
 
 ## Installation
 
-Visit the [tent release page](https://github.com/fhsinchy/tent/releases/) and download the `tent` binary to your computer. Open up your terminal where you're donwloaded the file and execute following commands:
+Visit the [tent release page](https://github.com/fhsinchy/tent/releases/) and download the `tent` binary to your computer. Open up your terminal where you've donwloaded the file and execute following commands:
 
 ```bash
 chmod +x ./tent
