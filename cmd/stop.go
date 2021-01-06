@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman/v2/pkg/domain/entities"
+	"github.com/fhsinchy/tent/store"
 	"github.com/fhsinchy/tent/utils"
 	"github.com/spf13/cobra"
 )
@@ -40,36 +41,40 @@ Volumes used for persisting data however, will be kept for later usage.
 			}
 		} else {
 			for _, service := range args {
-				tentContainers := utils.ListTentContainers(connText)
+				if _, ok := store.Services[service]; ok {
+					tentContainers := utils.ListTentContainers(connText)
 
-				filteredTentContainers := utils.FilterContainers(tentContainers, func(s entities.ListContainer) bool { return service == strings.Split(s.Names[0], "-")[1] })
+					filteredTentContainers := utils.FilterContainers(tentContainers, func(s entities.ListContainer) bool { return service == strings.Split(s.Names[0], "-")[1] })
 
-				containerCount := len(filteredTentContainers)
+					containerCount := len(filteredTentContainers)
 
-				if containerCount == 1 {
-					utils.StopContainer(connText, filteredTentContainers[0].ID)
-				} else if containerCount > 1 {
-					if isAll {
-						for _, tentContainer := range filteredTentContainers {
-							if service == strings.Split(tentContainer.Names[0], "-")[1] {
-								utils.StopContainer(connText, tentContainer.ID)
+					if containerCount == 1 {
+						utils.StopContainer(connText, filteredTentContainers[0].ID)
+					} else if containerCount > 1 {
+						if isAll {
+							for _, tentContainer := range filteredTentContainers {
+								if service == strings.Split(tentContainer.Names[0], "-")[1] {
+									utils.StopContainer(connText, tentContainer.ID)
+								}
+							}
+						} else {
+							var choice int
+							fmt.Printf("multiple %s containers found:\n", service)
+							for index, tentContainer := range filteredTentContainers {
+								fmt.Printf("  %d --> %s\n", index, tentContainer.Names[0])
+							}
+							fmt.Println("you can execute 'tent stop --all' to stop all running containers")
+							fmt.Printf("pick the container you want to stop (0 - %d): ", containerCount-1)
+							fmt.Scanln(&choice)
+							if choice < containerCount {
+								utils.StopContainer(connText, filteredTentContainers[choice].ID)
 							}
 						}
 					} else {
-						var choice int
-						fmt.Printf("multiple %s containers found:\n", service)
-						for index, tentContainer := range filteredTentContainers {
-							fmt.Printf("  %d --> %s\n", index, tentContainer.Names[0])
-						}
-						fmt.Println("you can execute 'tent stop --all' to stop all running containers")
-						fmt.Printf("pick the container you want to stop (0 - %d): ", containerCount-1)
-						fmt.Scanln(&choice)
-						if choice < containerCount {
-							utils.StopContainer(connText, filteredTentContainers[choice].ID)
-						}
+						fmt.Printf("no running %s container found", service)
 					}
 				} else {
-					fmt.Printf("no running %s container found", service)
+					fmt.Printf("%s is not a valid service name\n", service)
 				}
 			}
 		}

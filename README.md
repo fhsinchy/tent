@@ -25,7 +25,7 @@ systemctl --user start podman.socket
 ## enables the podman system service, so it doesn't close on every reboot
 systemctl --user enable podman.socket
 
-## starts the podman system service
+## stops the podman system service
 systemctl --user stop podman.socket
 
 ## disables the podman system service, so it doesn't start on every reboot
@@ -165,7 +165,7 @@ Containers started by `tent` are regular containers with some pre-set configurat
 
 Although `tent` is in a stable state right now, there things that I'll have to do. A tentative list is as follows:
 
-* [x] Set-up proper versioning.
+* [x] Set-up proper versioning
 * [ ] Write Tests (very important)
 
 That's all for now, this list will certainly change as I keep going working on my project.

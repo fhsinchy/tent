@@ -56,10 +56,12 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 			s.PortMappings = append(s.PortMappings, mapping.Mapping)
 		}
 
-		for _, env := range service.Env {
+		if len(service.Env) > 0 {
 			e := make(map[string]string)
-			e[env.Key] = env.Value
-			s.Env = e
+			for _, env := range service.Env {
+				e[env.Key] = env.Value
+				s.Env = e
+			}
 		}
 
 		if service.HasVolumes {
