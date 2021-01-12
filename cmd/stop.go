@@ -35,6 +35,7 @@ Volumes used for persisting data however, will be kept for later usage.
 			if len(tentContainers) > 0 {
 				for _, container := range utils.ListTentContainers(connText) {
 					utils.StopContainer(connText, container.ID)
+					utils.RemoveContainer(connText, container.ID)
 				}
 			} else {
 				fmt.Println("no running containers found")
