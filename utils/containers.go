@@ -54,11 +54,36 @@ func StopContainer(connText *context.Context, containerID string) {
 	}
 }
 
+// RemoveContainer function removes a stopped container.
+func RemoveContainer(connText *context.Context, containerID string) {
+	exists, err := containers.Exists(*connText, containerID, false)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if exists {
+		size := false
+		ins, err := containers.Inspect(*connText, containerID, &size)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if !ins.State.Running {
+			fmt.Printf("Removing %s container...\n", containerID)
+			force := false
+			volumes := false
+			err := containers.Remove(*connText, containerID, &force, &volumes)
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}
+	}
+}
+
 // ListTentContainers function lists all containers started by tent.
 func ListTentContainers(connText *context.Context) []entities.ListContainer {
 	filters := map[string][]string{
-		"name":   {"tent-"},
-		"status": {"running"},
+		"name": {"tent-"},
 	}
 
 	containerList, err := containers.List(*connText, filters, nil, nil, nil, nil, nil)

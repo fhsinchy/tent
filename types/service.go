@@ -46,10 +46,21 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 		log.Fatalln(err)
 	}
 
+	if containerExists {
+		size := false
+		ins, err := containers.Inspect(*connText, service.GetContainerName(), &size)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		if !ins.State.Running {
+			containerID = ins.ID
+		}
+	}
+
 	if !containerExists {
 		fmt.Printf("Creating %s container using %s image...\n", service.GetContainerName(), service.GetImageName())
 		s := specgen.NewSpecGenerator(service.GetImageName(), false)
-		s.Remove = true
 		s.Name = service.GetContainerName()
 
 		for _, mapping := range service.PortMappings {

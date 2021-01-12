@@ -50,11 +50,13 @@ Volumes used for persisting data however, will be kept for later usage.
 
 					if containerCount == 1 {
 						utils.StopContainer(connText, filteredTentContainers[0].ID)
+						utils.RemoveContainer(connText, filteredTentContainers[0].ID)
 					} else if containerCount > 1 {
 						if isAll {
 							for _, tentContainer := range filteredTentContainers {
 								if service == strings.Split(tentContainer.Names[0], "-")[1] {
 									utils.StopContainer(connText, tentContainer.ID)
+									utils.RemoveContainer(connText, filteredTentContainers[0].ID)
 								}
 							}
 						} else {
@@ -68,6 +70,7 @@ Volumes used for persisting data however, will be kept for later usage.
 							fmt.Scanln(&choice)
 							if choice < containerCount {
 								utils.StopContainer(connText, filteredTentContainers[choice].ID)
+								utils.RemoveContainer(connText, filteredTentContainers[0].ID)
 							}
 						}
 					} else {
