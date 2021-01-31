@@ -15,11 +15,9 @@ var MeiliSearch types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 7700,
-				HostPort:      7700,
-			},
+			Text:          "Server Port",
+			ContainerPort: 7700,
+			HostPort:      7700,
 		},
 	},
 	HasVolumes: true,

@@ -15,11 +15,9 @@ var Mongo types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 27017,
-				HostPort:      27017,
-			},
+			Text:          "Server Port",
+			ContainerPort: 27017,
+			HostPort:      27017,
 		},
 	},
 	Env: []types.EnvVar{

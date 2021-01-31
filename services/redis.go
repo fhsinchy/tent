@@ -15,11 +15,9 @@ var Redis types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 6379,
-				HostPort:      6379,
-			},
+			Text:          "Server Port",
+			ContainerPort: 6379,
+			HostPort:      6379,
 		},
 	},
 	HasVolumes: true,

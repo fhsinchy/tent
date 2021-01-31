@@ -15,11 +15,9 @@ var Postgres types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 5432,
-				HostPort:      5432,
-			},
+			Text:          "Server Port",
+			ContainerPort: 5432,
+			HostPort:      5432,
 		},
 	},
 	Env: []types.EnvVar{

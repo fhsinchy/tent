@@ -64,7 +64,10 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 		s.Name = service.GetContainerName()
 
 		for _, mapping := range service.PortMappings {
-			s.PortMappings = append(s.PortMappings, mapping.Mapping)
+			s.PortMappings = append(s.PortMappings, specgen.PortMapping{
+				ContainerPort: mapping.ContainerPort,
+				HostPort:      mapping.HostPort,
+			})
 		}
 
 		if len(service.Env) > 0 {
@@ -106,10 +109,10 @@ func (service *Service) ShowPrompt() {
 
 	for index, mapping := range service.PortMappings {
 		var port uint16
-		fmt.Printf("%s? (default: %d): ", mapping.Text, mapping.Mapping.HostPort)
+		fmt.Printf("%s? (default: %d): ", mapping.Text, mapping.HostPort)
 		fmt.Scanln(&port)
 		if port != 0 {
-			service.PortMappings[index].Mapping.HostPort = port
+			service.PortMappings[index].HostPort = port
 		}
 	}
 
@@ -136,7 +139,7 @@ func (service *Service) ShowPrompt() {
 
 // GetContainerName method generates unique name for each container by combining their image tag and exposed port number.
 func (service *Service) GetContainerName() string {
-	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMappings[0].Mapping.HostPort))
+	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMappings[0].HostPort))
 
 	return container
 }

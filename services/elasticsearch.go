@@ -15,11 +15,9 @@ var ElasticSearch types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 9200,
-				HostPort:      9200,
-			},
+			Text:          "Server Port",
+			ContainerPort: 9200,
+			HostPort:      9200,
 		},
 	},
 	Env: []types.EnvVar{

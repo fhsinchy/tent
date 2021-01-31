@@ -15,11 +15,9 @@ var DynamoDB types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 8000,
-				HostPort:      8000,
-			},
+			Text:          "Server Port",
+			ContainerPort: 8000,
+			HostPort:      8000,
 		},
 	},
 	Env: []types.EnvVar{

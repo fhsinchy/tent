@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/fhsinchy/tent/types"
 )
 
@@ -12,11 +11,9 @@ var MicrosoftSQLServer types.Service = types.Service{
 	Tag:   "latest",
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 1433,
-				HostPort:      1433,
-			},
+			Text:          "Server Port",
+			ContainerPort: 1433,
+			HostPort:      1433,
 		},
 	},
 	Env: []types.EnvVar{

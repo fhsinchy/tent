@@ -15,11 +15,9 @@ var MariaDB types.Service = types.Service{
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 3306,
-				HostPort:      3306,
-			},
+			Text:          "Server Port",
+			ContainerPort: 3306,
+			HostPort:      3306,
 		},
 	},
 	Env: []types.EnvVar{
