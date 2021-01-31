@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/containers/podman/v2/pkg/bindings"
 	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/containers/podman/v2/pkg/bindings/images"
 	"github.com/containers/podman/v2/pkg/domain/entities"
@@ -47,8 +48,7 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 	}
 
 	if containerExists {
-		size := false
-		ins, err := containers.Inspect(*connText, service.GetContainerName(), &size)
+		ins, err := containers.Inspect(*connText, service.GetContainerName(), bindings.PFalse)
 		if err != nil {
 			log.Fatalln(err)
 		}
