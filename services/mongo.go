@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/fhsinchy/tent/types"
 )
 
@@ -10,8 +9,12 @@ var Mongo types.Service = types.Service{
 	Name:  "mongo",
 	Image: "docker.io/mongo",
 	Tag:   "latest",
-	Volume: specgen.NamedVolume{
-		Dest: "/data/db",
+	Volumes: []types.VolumeMount{
+		{
+			Text: "Server Data Volume",
+			Name: "mongo-data",
+			Dest: "/data/db",
+		},
 	},
 	PortMappings: []types.PortMapping{
 		{
@@ -34,7 +37,5 @@ var Mongo types.Service = types.Service{
 			Mutable: true,
 		},
 	},
-	Command:    []string{"--serviceExecutor", "adaptive"},
-	HasVolumes: true,
-	HasCommand: true,
+	Command: []string{"--serviceExecutor", "adaptive"},
 }

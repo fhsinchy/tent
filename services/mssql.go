@@ -9,6 +9,13 @@ var MicrosoftSQLServer types.Service = types.Service{
 	Name:  "mssql",
 	Image: "mcr.microsoft.com/mssql/server",
 	Tag:   "latest",
+	Volumes: []types.VolumeMount{
+		{
+			Text: "Server Data Volume",
+			Name: "mssql-data",
+			Dest: "/var/opt/mssql",
+		},
+	},
 	PortMappings: []types.PortMapping{
 		{
 			Text:          "Server Port",

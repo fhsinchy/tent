@@ -21,5 +21,4 @@ var MailHog types.Service = types.Service{
 			HostPort:      8025,
 		},
 	},
-	HasVolumes: false,
 }

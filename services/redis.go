@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/fhsinchy/tent/types"
 )
 
@@ -10,8 +9,12 @@ var Redis types.Service = types.Service{
 	Name:  "redis",
 	Image: "docker.io/redis",
 	Tag:   "latest",
-	Volume: specgen.NamedVolume{
-		Dest: "/data",
+	Volumes: []types.VolumeMount{
+		{
+			Text: "Server Data Volume",
+			Name: "redis-data",
+			Dest: "/data",
+		},
 	},
 	PortMappings: []types.PortMapping{
 		{
@@ -20,5 +23,4 @@ var Redis types.Service = types.Service{
 			HostPort:      6379,
 		},
 	},
-	HasVolumes: true,
 }

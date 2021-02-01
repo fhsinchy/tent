@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/fhsinchy/tent/types"
 )
 
@@ -10,8 +9,12 @@ var ElasticSearch types.Service = types.Service{
 	Name:  "elasticsearch",
 	Image: "docker.io/elasticsearch",
 	Tag:   "latest",
-	Volume: specgen.NamedVolume{
-		Dest: "/usr/share/elasticsearch/data",
+	Volumes: []types.VolumeMount{
+		{
+			Text: "Server Data Volume",
+			Name: "elasticsearch-data",
+			Dest: "/usr/share/elasticsearch/data",
+		},
 	},
 	PortMappings: []types.PortMapping{
 		{
@@ -28,5 +31,4 @@ var ElasticSearch types.Service = types.Service{
 			Mutable: false,
 		},
 	},
-	HasVolumes: true,
 }

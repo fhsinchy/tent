@@ -18,12 +18,10 @@ type Service struct {
 	Tag          string
 	Name         string
 	Image        string
-	Volume       specgen.NamedVolume
+	Volumes      []VolumeMount
 	PortMappings []PortMapping
 	Env          []EnvVar
 	Command      []string
-	HasVolumes   bool
-	HasCommand   bool
 }
 
 // CreateContainer method creates a new container with using a given image pulled by PullImage method.
@@ -78,12 +76,17 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 			}
 		}
 
-		if service.HasVolumes {
-			service.Volume.Name = service.GetVolumeName()
-			s.Volumes = append(s.Volumes, &service.Volume)
+		if len(service.Volumes) > 0 {
+			for _, volume := range service.Volumes {
+				vol := specgen.NamedVolume{
+					Name: volume.Name,
+					Dest: volume.Dest,
+				}
+				s.Volumes = append(s.Volumes, &vol)
+			}
 		}
 
-		if service.HasCommand {
+		if len(service.Command) > 0 {
 			s.Command = service.Command
 		}
 
@@ -127,12 +130,12 @@ func (service *Service) ShowPrompt() {
 		}
 	}
 
-	if service.HasVolumes {
-		var volume string
-		fmt.Printf("Volume name for persisting data? (default: %s): ", service.GetVolumeName())
-		fmt.Scanln(&volume)
-		if volume != "" {
-			service.Volume.Name = volume
+	for index, volume := range service.Volumes {
+		var name string
+		fmt.Printf("%s? (default: %s): ", volume.Text, volume.Name)
+		fmt.Scanln(&name)
+		if name != "" {
+			service.Volumes[index].Name = name
 		}
 	}
 }
