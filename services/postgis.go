@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/fhsinchy/tent/types"
 )
 
@@ -10,16 +9,18 @@ var PostGIS types.Service = types.Service{
 	Name:  "postgis",
 	Image: "docker.io/postgis/postgis",
 	Tag:   "latest",
-	Volume: specgen.NamedVolume{
-		Dest: "/var/lib/postgis/data",
+	Volumes: []types.VolumeMount{
+		{
+			Text: "Server Data Volume",
+			Name: "postgis-data",
+			Dest: "/var/lib/postgis/data",
+		},
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 5432,
-				HostPort:      5432,
-			},
+			Text:          "Server Port",
+			ContainerPort: 5432,
+			HostPort:      5432,
 		},
 	},
 	Env: []types.EnvVar{
@@ -30,5 +31,4 @@ var PostGIS types.Service = types.Service{
 			Mutable: true,
 		},
 	},
-	HasVolumes: true,
 }

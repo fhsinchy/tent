@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/containers/podman/v2/libpod/define"
+	"github.com/containers/podman/v2/pkg/bindings"
 	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/containers/podman/v2/pkg/domain/entities"
 )
@@ -38,8 +39,7 @@ func StopContainer(connText *context.Context, containerID string) {
 	}
 
 	if exists {
-		size := false
-		ins, err := containers.Inspect(*connText, containerID, &size)
+		ins, err := containers.Inspect(*connText, containerID, bindings.PFalse)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -62,8 +62,7 @@ func RemoveContainer(connText *context.Context, containerID string) {
 	}
 
 	if exists {
-		size := false
-		ins, err := containers.Inspect(*connText, containerID, &size)
+		ins, err := containers.Inspect(*connText, containerID, bindings.PFalse)
 		if err != nil {
 			log.Fatalln(err)
 		}

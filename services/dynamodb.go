@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/fhsinchy/tent/types"
 )
 
@@ -10,16 +9,18 @@ var DynamoDB types.Service = types.Service{
 	Name:  "dynamodb",
 	Image: "docker.io/amazon/dynamodb-local",
 	Tag:   "latest",
-	Volume: specgen.NamedVolume{
-		Dest: "/dynamodb_local_db",
+	Volumes: []types.VolumeMount{
+		{
+			Text: "Server Data Volume",
+			Name: "dynamodb-data",
+			Dest: "/dynamodb_local_db",
+		},
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 8000,
-				HostPort:      8000,
-			},
+			Text:          "Server Port",
+			ContainerPort: 8000,
+			HostPort:      8000,
 		},
 	},
 	Env: []types.EnvVar{
@@ -30,7 +31,5 @@ var DynamoDB types.Service = types.Service{
 			Mutable: false,
 		},
 	},
-	Command:    []string{"-jar", "DynamoDBLocal.jar", "--sharedDb", "-dbPath", "/dynamodb_local_db"},
-	HasVolumes: true,
-	HasCommand: true,
+	Command: []string{"-jar", "DynamoDBLocal.jar", "--sharedDb", "-dbPath", "/dynamodb_local_db"},
 }

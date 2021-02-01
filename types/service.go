@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/containers/podman/v2/pkg/bindings"
 	"github.com/containers/podman/v2/pkg/bindings/containers"
 	"github.com/containers/podman/v2/pkg/bindings/images"
 	"github.com/containers/podman/v2/pkg/domain/entities"
@@ -17,12 +18,10 @@ type Service struct {
 	Tag          string
 	Name         string
 	Image        string
-	Volume       specgen.NamedVolume
+	Volumes      []VolumeMount
 	PortMappings []PortMapping
 	Env          []EnvVar
 	Command      []string
-	HasVolumes   bool
-	HasCommand   bool
 }
 
 // CreateContainer method creates a new container with using a given image pulled by PullImage method.
@@ -47,8 +46,7 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 	}
 
 	if containerExists {
-		size := false
-		ins, err := containers.Inspect(*connText, service.GetContainerName(), &size)
+		ins, err := containers.Inspect(*connText, service.GetContainerName(), bindings.PFalse)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -64,7 +62,10 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 		s.Name = service.GetContainerName()
 
 		for _, mapping := range service.PortMappings {
-			s.PortMappings = append(s.PortMappings, mapping.Mapping)
+			s.PortMappings = append(s.PortMappings, specgen.PortMapping{
+				ContainerPort: mapping.ContainerPort,
+				HostPort:      mapping.HostPort,
+			})
 		}
 
 		if len(service.Env) > 0 {
@@ -75,12 +76,17 @@ func (service *Service) CreateContainer(connText *context.Context) string {
 			}
 		}
 
-		if service.HasVolumes {
-			service.Volume.Name = service.GetVolumeName()
-			s.Volumes = append(s.Volumes, &service.Volume)
+		if len(service.Volumes) > 0 {
+			for _, volume := range service.Volumes {
+				vol := specgen.NamedVolume{
+					Name: volume.Name,
+					Dest: volume.Dest,
+				}
+				s.Volumes = append(s.Volumes, &vol)
+			}
 		}
 
-		if service.HasCommand {
+		if len(service.Command) > 0 {
 			s.Command = service.Command
 		}
 
@@ -106,10 +112,10 @@ func (service *Service) ShowPrompt() {
 
 	for index, mapping := range service.PortMappings {
 		var port uint16
-		fmt.Printf("%s? (default: %d): ", mapping.Text, mapping.Mapping.HostPort)
+		fmt.Printf("%s? (default: %d): ", mapping.Text, mapping.HostPort)
 		fmt.Scanln(&port)
 		if port != 0 {
-			service.PortMappings[index].Mapping.HostPort = port
+			service.PortMappings[index].HostPort = port
 		}
 	}
 
@@ -124,19 +130,19 @@ func (service *Service) ShowPrompt() {
 		}
 	}
 
-	if service.HasVolumes {
-		var volume string
-		fmt.Printf("Volume name for persisting data? (default: %s): ", service.GetVolumeName())
-		fmt.Scanln(&volume)
-		if volume != "" {
-			service.Volume.Name = volume
+	for index, volume := range service.Volumes {
+		var name string
+		fmt.Printf("%s? (default: %s): ", volume.Text, volume.Name)
+		fmt.Scanln(&name)
+		if name != "" {
+			service.Volumes[index].Name = name
 		}
 	}
 }
 
 // GetContainerName method generates unique name for each container by combining their image tag and exposed port number.
 func (service *Service) GetContainerName() string {
-	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMappings[0].Mapping.HostPort))
+	container := "tent" + "-" + service.Name + "-" + service.Tag + "-" + strconv.Itoa(int(service.PortMappings[0].HostPort))
 
 	return container
 }

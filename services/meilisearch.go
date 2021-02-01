@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/fhsinchy/tent/types"
 )
 
@@ -10,17 +9,18 @@ var MeiliSearch types.Service = types.Service{
 	Name:  "meilisearch",
 	Image: "docker.io/getmeili/meilisearch",
 	Tag:   "latest",
-	Volume: specgen.NamedVolume{
-		Dest: "/data.ms",
+	Volumes: []types.VolumeMount{
+		{
+			Text: "Server Data Volume",
+			Name: "meilisearch-data",
+			Dest: "/data.ms",
+		},
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 7700,
-				HostPort:      7700,
-			},
+			Text:          "Server Port",
+			ContainerPort: 7700,
+			HostPort:      7700,
 		},
 	},
-	HasVolumes: true,
 }

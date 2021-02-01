@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/containers/podman/v2/pkg/specgen"
 	"github.com/fhsinchy/tent/types"
 )
 
@@ -10,16 +9,18 @@ var MariaDB types.Service = types.Service{
 	Name:  "mariadb",
 	Image: "docker.io/mariadb",
 	Tag:   "latest",
-	Volume: specgen.NamedVolume{
-		Dest: "/var/lib/mysql",
+	Volumes: []types.VolumeMount{
+		{
+			Text: "Server Data Volume",
+			Name: "mariadb-data",
+			Dest: "/var/lib/mysql",
+		},
 	},
 	PortMappings: []types.PortMapping{
 		{
-			Text: "Server Port",
-			Mapping: specgen.PortMapping{
-				ContainerPort: 3306,
-				HostPort:      3306,
-			},
+			Text:          "Server Port",
+			ContainerPort: 3306,
+			HostPort:      3306,
 		},
 	},
 	Env: []types.EnvVar{
@@ -30,5 +31,4 @@ var MariaDB types.Service = types.Service{
 			Mutable: true,
 		},
 	},
-	HasVolumes: true,
 }
