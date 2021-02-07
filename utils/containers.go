@@ -80,7 +80,7 @@ func RemoveContainer(connText *context.Context, containerID string) {
 }
 
 // ListTentContainers function lists all containers started by tent.
-func ListTentContainers(connText *context.Context) []entities.ListContainer {
+func ListTentContainers(connText *context.Context) (containerList []entities.ListContainer) {
 	filters := map[string][]string{
 		"name": {"tent-"},
 	}
@@ -90,7 +90,7 @@ func ListTentContainers(connText *context.Context) []entities.ListContainer {
 		log.Fatalln(err)
 	}
 
-	return containerList
+	return
 }
 
 // FilterContainers function filters a list of entities.ListContainer type by running a given callback.
@@ -100,5 +100,6 @@ func FilterContainers(collection []entities.ListContainer, callback func(entitie
 			ret = append(ret, item)
 		}
 	}
+
 	return
 }
