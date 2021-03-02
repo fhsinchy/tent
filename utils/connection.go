@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/containers/podman/v2/pkg/bindings"
+	"github.com/containers/podman/v3/pkg/bindings"
 )
 
 // GetContext function returns a context by making connection with the Podman System Service.

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/containers/podman/v2/pkg/domain/entities"
+	"github.com/containers/podman/v3/pkg/domain/entities"
 	"github.com/fhsinchy/tent/store"
 	"github.com/fhsinchy/tent/utils"
 	"github.com/spf13/cobra"
