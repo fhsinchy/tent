@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/containers/podman/v3/pkg/domain/entities"
 	"github.com/fhsinchy/tent/store"
 	"github.com/fhsinchy/tent/utils"
 	"github.com/spf13/cobra"
@@ -45,7 +44,7 @@ Volumes used for persisting data however, will be kept for later usage.
 				if _, ok := store.Services[service]; ok {
 					tentContainers := utils.ListTentContainers(connText)
 
-					filteredTentContainers := utils.FilterContainers(tentContainers, func(s entities.ListContainer) bool { return service == strings.Split(s.Names[0], "-")[1] })
+					filteredTentContainers := utils.FilterContainers(tentContainers, service)
 
 					containerCount := len(filteredTentContainers)
 

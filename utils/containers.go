@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/containers/podman/v3/libpod/define"
 	"github.com/containers/podman/v3/pkg/bindings"
@@ -111,10 +112,10 @@ func ListTentContainers(connText *context.Context) (containerList []entities.Lis
 }
 
 // FilterContainers function filters a list of entities.ListContainer type by running a given callback.
-func FilterContainers(collection []entities.ListContainer, callback func(entities.ListContainer) bool) (ret []entities.ListContainer) {
-	for _, item := range collection {
-		if callback(item) {
-			ret = append(ret, item)
+func FilterContainers(containers []entities.ListContainer, serviceName string) (filteredContainers []entities.ListContainer) {
+	for _, container := range containers {
+		if strings.Split(container.Names[0], "-")[1] == serviceName {
+			filteredContainers = append(filteredContainers, container)
 		}
 	}
 
