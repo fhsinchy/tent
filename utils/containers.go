@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/containers/podman/v3/libpod/define"
-	"github.com/containers/podman/v3/pkg/bindings"
 	"github.com/containers/podman/v3/pkg/bindings/containers"
 	"github.com/containers/podman/v3/pkg/domain/entities"
 )
@@ -14,7 +14,8 @@ import (
 // StartContainer function starts a given container created by the CreateContainer function.
 func StartContainer(connText *context.Context, containerID string) {
 	var containerExistsOptions containers.ExistsOptions
-	containerExistsOptions.External = bindings.PFalse
+	var pFalse = false
+	containerExistsOptions.External = &pFalse
 	exists, err := containers.Exists(*connText, containerID, &containerExistsOptions)
 	if err != nil {
 		log.Fatalln(err)
@@ -39,7 +40,8 @@ func StartContainer(connText *context.Context, containerID string) {
 // StopContainer function stops a running container by dispatching a SIGTERM signal.
 func StopContainer(connText *context.Context, containerID string) {
 	var containerExistsOptions containers.ExistsOptions
-	containerExistsOptions.External = bindings.PFalse
+	var pFalse = false
+	containerExistsOptions.External = &pFalse
 	exists, err := containers.Exists(*connText, containerID, &containerExistsOptions)
 	if err != nil {
 		log.Fatalln(err)
@@ -47,7 +49,7 @@ func StopContainer(connText *context.Context, containerID string) {
 
 	if exists {
 		var containerInspectOptions containers.InspectOptions
-		containerInspectOptions.Size = bindings.PFalse
+		containerInspectOptions.Size = &pFalse
 		ins, err := containers.Inspect(*connText, containerID, &containerInspectOptions)
 		if err != nil {
 			log.Fatalln(err)
@@ -66,7 +68,8 @@ func StopContainer(connText *context.Context, containerID string) {
 // RemoveContainer function removes a stopped container.
 func RemoveContainer(connText *context.Context, containerID string) {
 	var containerExistsOptions containers.ExistsOptions
-	containerExistsOptions.External = bindings.PFalse
+	var pFalse = false
+	containerExistsOptions.External = &pFalse
 	exists, err := containers.Exists(*connText, containerID, &containerExistsOptions)
 	if err != nil {
 		log.Fatalln(err)
@@ -74,7 +77,7 @@ func RemoveContainer(connText *context.Context, containerID string) {
 
 	if exists {
 		var containerInspectOptions containers.InspectOptions
-		containerInspectOptions.Size = bindings.PFalse
+		containerInspectOptions.Size = &pFalse
 		ins, err := containers.Inspect(*connText, containerID, &containerInspectOptions)
 		if err != nil {
 			log.Fatalln(err)
@@ -83,8 +86,8 @@ func RemoveContainer(connText *context.Context, containerID string) {
 		if !ins.State.Running {
 			fmt.Printf("Removing %s container...\n", containerID)
 			var containerRemoveOptions containers.RemoveOptions
-			containerRemoveOptions.Force = bindings.PFalse
-			containerRemoveOptions.Volumes = bindings.PFalse
+			containerRemoveOptions.Force = &pFalse
+			containerRemoveOptions.Volumes = &pFalse
 			err := containers.Remove(*connText, containerID, &containerRemoveOptions)
 			if err != nil {
 				log.Fatalln(err)
@@ -111,10 +114,10 @@ func ListTentContainers(connText *context.Context) (containerList []entities.Lis
 }
 
 // FilterContainers function filters a list of entities.ListContainer type by running a given callback.
-func FilterContainers(collection []entities.ListContainer, callback func(entities.ListContainer) bool) (ret []entities.ListContainer) {
-	for _, item := range collection {
-		if callback(item) {
-			ret = append(ret, item)
+func FilterContainers(containers []entities.ListContainer, serviceName string) (filteredContainers []entities.ListContainer) {
+	for _, container := range containers {
+		if strings.Split(container.Names[0], "-")[1] == serviceName {
+			filteredContainers = append(filteredContainers, container)
 		}
 	}
 

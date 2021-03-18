@@ -6,7 +6,6 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/containers/podman/v3/pkg/bindings"
 	"github.com/containers/podman/v3/pkg/bindings/containers"
 	"github.com/containers/podman/v3/pkg/bindings/images"
 	"github.com/containers/podman/v3/pkg/specgen"
@@ -26,7 +25,8 @@ type Service struct {
 // CreateContainer method creates a new container with using a given image pulled by PullImage method.
 func (service *Service) CreateContainer(connText *context.Context) (containerID string) {
 	var containerExistsOptions containers.ExistsOptions
-	containerExistsOptions.External = bindings.PFalse
+	var pFalse = false
+	containerExistsOptions.External = &pFalse
 	containerExists, err := containers.Exists(*connText, service.GetContainerName(), &containerExistsOptions)
 	if err != nil {
 		log.Fatalln(err)
@@ -34,7 +34,7 @@ func (service *Service) CreateContainer(connText *context.Context) (containerID 
 
 	if containerExists {
 		var containerInspectOptions containers.InspectOptions
-		containerInspectOptions.Size = bindings.PFalse
+		containerInspectOptions.Size = &pFalse
 		ins, err := containers.Inspect(*connText, service.GetContainerName(), &containerInspectOptions)
 		if err != nil {
 			log.Fatalln(err)

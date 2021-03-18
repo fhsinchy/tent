@@ -1,4 +1,4 @@
-# tent
+# tent ![GitHub all releases](https://img.shields.io/github/downloads/fhsinchy/tent/total)
 
 Tent is a CLI tool for running development dependencies such as MySQL, Mongo, ElasticSearch etc inside pre-configured containers using simple one-liners.
 
