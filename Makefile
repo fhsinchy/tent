@@ -1,4 +1,4 @@
-V=0.0.6
+V=0.0.5
 LDFLAGS=-ldflags="-X 'github.com/fhsinchy/tent/cmd.version=v${V}'"
 
 build:
