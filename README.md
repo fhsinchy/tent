@@ -1,5 +1,7 @@
 # tent ![GitHub all releases](https://img.shields.io/github/downloads/fhsinchy/tent/total)
 
+<a href="https://www.buymeacoffee.com/fhsinchy" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="50" width="auto"></a>
+
 Tent is a CLI tool for running development dependencies such as MySQL, Mongo, ElasticSearch etc inside pre-configured containers using simple one-liners.
 
 Running containers can be accessed via their exposed ports and can be paired with any other application on your system.
