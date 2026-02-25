@@ -7,7 +7,7 @@ import (
 
 	"text/tabwriter"
 
-	"github.com/fhsinchy/tent/utils"
+	"github.com/fhsinchy/tent/runtime"
 	"github.com/spf13/cobra"
 )
 
@@ -17,9 +17,9 @@ var listCmd = &cobra.Command{
 	Short: "Lists all running services",
 	Long:  `The list command lists all the running services in a nicely formatted table.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		connText := utils.GetContext()
+		rt := runtime.Connect()
 
-		tentContainers := utils.ListTentContainers(connText)
+		tentContainers := rt.ListTentContainers()
 
 		w := new(tabwriter.Writer)
 
@@ -32,7 +32,7 @@ var listCmd = &cobra.Command{
 		for _, tentContainer := range tentContainers {
 			ports := strconv.Itoa(int(tentContainer.Ports[0].HostPort)) + "->" + strconv.Itoa(int(tentContainer.Ports[0].ContainerPort)) + "/" + tentContainer.Ports[0].Protocol
 
-			fmt.Fprintf(w, "\n %s\t%s\t%s\t", tentContainer.Names[0], tentContainer.Image, ports)
+			fmt.Fprintf(w, "\n %s\t%s\t%s\t", tentContainer.Name, tentContainer.Image, ports)
 		}
 	},
 }

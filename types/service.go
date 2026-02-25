@@ -1,15 +1,8 @@
 package types
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"strconv"
-
-	nettypes "github.com/containers/common/libnetwork/types"
-	"github.com/containers/podman/v5/pkg/bindings/containers"
-	"github.com/containers/podman/v5/pkg/bindings/images"
-	"github.com/containers/podman/v5/pkg/specgen"
 )
 
 // Service describes the properties and methods for a service like MySQL or Redis. All the available services in tent uses this struct as their type.
@@ -21,81 +14,6 @@ type Service struct {
 	PortMappings []PortMapping
 	Env          []EnvVar
 	Command      []string
-}
-
-// CreateContainer method creates a new container with using a given image pulled by PullImage method.
-func (service *Service) CreateContainer(connText *context.Context) (containerID string) {
-	containerExists, err := containers.Exists(*connText, service.GetContainerName(), new(containers.ExistsOptions).WithExternal(false))
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if containerExists {
-		ins, err := containers.Inspect(*connText, service.GetContainerName(), new(containers.InspectOptions).WithSize(false))
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		if ins.State.Running {
-			fmt.Printf("%s container already running", service.GetContainerName())
-		} else {
-			containerID = ins.ID
-		}
-	} else {
-		imageExists, err := images.Exists(*connText, service.GetImageName(), nil)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		if !imageExists {
-			_, err := images.Pull(*connText, service.GetImageName(), nil)
-			if err != nil {
-				log.Fatalln(err)
-			}
-		}
-
-		fmt.Printf("Creating %s container using %s image...\n", service.GetContainerName(), service.GetImageName())
-		s := specgen.NewSpecGenerator(service.GetImageName(), false)
-		s.Name = service.GetContainerName()
-
-		for _, mapping := range service.PortMappings {
-			s.PortMappings = append(s.PortMappings, nettypes.PortMapping{
-				ContainerPort: mapping.ContainerPort,
-				HostPort:      mapping.HostPort,
-			})
-		}
-
-		if len(service.Env) > 0 {
-			e := make(map[string]string)
-			for _, env := range service.Env {
-				e[env.Key] = env.Value
-				s.Env = e
-			}
-		}
-
-		if len(service.Volumes) > 0 {
-			for _, volume := range service.Volumes {
-				vol := specgen.NamedVolume{
-					Name: volume.Name,
-					Dest: volume.Dest,
-				}
-				s.Volumes = append(s.Volumes, &vol)
-			}
-		}
-
-		if len(service.Command) > 0 {
-			s.Command = service.Command
-		}
-
-		createResponse, err := containers.CreateWithSpec(*connText, s, nil)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		containerID = createResponse.ID
-	}
-
-	return
 }
 
 // ShowPrompt method presents user with user friendly prompts.
