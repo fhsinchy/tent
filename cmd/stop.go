@@ -56,7 +56,7 @@ Volumes used for persisting data however, will be kept for later usage.
 							for _, tentContainer := range filteredTentContainers {
 								if service == strings.Split(tentContainer.Names[0], "-")[1] {
 									utils.StopContainer(connText, tentContainer.ID)
-									utils.RemoveContainer(connText, filteredTentContainers[0].ID)
+									utils.RemoveContainer(connText, tentContainer.ID)
 								}
 							}
 						} else {
@@ -70,7 +70,7 @@ Volumes used for persisting data however, will be kept for later usage.
 							fmt.Scanln(&choice)
 							if choice < containerCount {
 								utils.StopContainer(connText, filteredTentContainers[choice].ID)
-								utils.RemoveContainer(connText, filteredTentContainers[0].ID)
+								utils.RemoveContainer(connText, filteredTentContainers[choice].ID)
 							}
 						}
 					} else {

@@ -6,10 +6,10 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/containers/podman/v3/pkg/bindings"
-	"github.com/containers/podman/v3/pkg/bindings/containers"
-	"github.com/containers/podman/v3/pkg/bindings/images"
-	"github.com/containers/podman/v3/pkg/specgen"
+	nettypes "github.com/containers/common/libnetwork/types"
+	"github.com/containers/podman/v5/pkg/bindings/containers"
+	"github.com/containers/podman/v5/pkg/bindings/images"
+	"github.com/containers/podman/v5/pkg/specgen"
 )
 
 // Service describes the properties and methods for a service like MySQL or Redis. All the available services in tent uses this struct as their type.
@@ -25,17 +25,13 @@ type Service struct {
 
 // CreateContainer method creates a new container with using a given image pulled by PullImage method.
 func (service *Service) CreateContainer(connText *context.Context) (containerID string) {
-	var containerExistsOptions containers.ExistsOptions
-	containerExistsOptions.External = bindings.PFalse
-	containerExists, err := containers.Exists(*connText, service.GetContainerName(), &containerExistsOptions)
+	containerExists, err := containers.Exists(*connText, service.GetContainerName(), new(containers.ExistsOptions).WithExternal(false))
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	if containerExists {
-		var containerInspectOptions containers.InspectOptions
-		containerInspectOptions.Size = bindings.PFalse
-		ins, err := containers.Inspect(*connText, service.GetContainerName(), &containerInspectOptions)
+		ins, err := containers.Inspect(*connText, service.GetContainerName(), new(containers.InspectOptions).WithSize(false))
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -63,7 +59,7 @@ func (service *Service) CreateContainer(connText *context.Context) (containerID 
 		s.Name = service.GetContainerName()
 
 		for _, mapping := range service.PortMappings {
-			s.PortMappings = append(s.PortMappings, specgen.PortMapping{
+			s.PortMappings = append(s.PortMappings, nettypes.PortMapping{
 				ContainerPort: mapping.ContainerPort,
 				HostPort:      mapping.HostPort,
 			})

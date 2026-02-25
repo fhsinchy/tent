@@ -6,17 +6,14 @@ import (
 	"log"
 	"strings"
 
-	"github.com/containers/podman/v3/libpod/define"
-	"github.com/containers/podman/v3/pkg/bindings"
-	"github.com/containers/podman/v3/pkg/bindings/containers"
-	"github.com/containers/podman/v3/pkg/domain/entities"
+	"github.com/containers/podman/v5/libpod/define"
+	"github.com/containers/podman/v5/pkg/bindings/containers"
+	"github.com/containers/podman/v5/pkg/domain/entities"
 )
 
 // StartContainer function starts a given container created by the CreateContainer function.
 func StartContainer(connText *context.Context, containerID string) {
-	var containerExistsOptions containers.ExistsOptions
-	containerExistsOptions.External = bindings.PFalse
-	exists, err := containers.Exists(*connText, containerID, &containerExistsOptions)
+	exists, err := containers.Exists(*connText, containerID, new(containers.ExistsOptions).WithExternal(false))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -26,11 +23,7 @@ func StartContainer(connText *context.Context, containerID string) {
 			log.Fatalln(err)
 		}
 
-		var containerWaitOptions containers.WaitOptions
-		containerWaitOptions.Condition = []define.ContainerStatus{
-			define.ContainerStateRunning,
-		}
-		_, err = containers.Wait(*connText, containerID, &containerWaitOptions)
+		_, err = containers.Wait(*connText, containerID, new(containers.WaitOptions).WithCondition([]define.ContainerStatus{define.ContainerStateRunning}))
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -39,17 +32,13 @@ func StartContainer(connText *context.Context, containerID string) {
 
 // StopContainer function stops a running container by dispatching a SIGTERM signal.
 func StopContainer(connText *context.Context, containerID string) {
-	var containerExistsOptions containers.ExistsOptions
-	containerExistsOptions.External = bindings.PFalse
-	exists, err := containers.Exists(*connText, containerID, &containerExistsOptions)
+	exists, err := containers.Exists(*connText, containerID, new(containers.ExistsOptions).WithExternal(false))
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	if exists {
-		var containerInspectOptions containers.InspectOptions
-		containerInspectOptions.Size = bindings.PFalse
-		ins, err := containers.Inspect(*connText, containerID, &containerInspectOptions)
+		ins, err := containers.Inspect(*connText, containerID, new(containers.InspectOptions).WithSize(false))
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -66,27 +55,20 @@ func StopContainer(connText *context.Context, containerID string) {
 
 // RemoveContainer function removes a stopped container.
 func RemoveContainer(connText *context.Context, containerID string) {
-	var containerExistsOptions containers.ExistsOptions
-	containerExistsOptions.External = bindings.PFalse
-	exists, err := containers.Exists(*connText, containerID, &containerExistsOptions)
+	exists, err := containers.Exists(*connText, containerID, new(containers.ExistsOptions).WithExternal(false))
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	if exists {
-		var containerInspectOptions containers.InspectOptions
-		containerInspectOptions.Size = bindings.PFalse
-		ins, err := containers.Inspect(*connText, containerID, &containerInspectOptions)
+		ins, err := containers.Inspect(*connText, containerID, new(containers.InspectOptions).WithSize(false))
 		if err != nil {
 			log.Fatalln(err)
 		}
 
 		if !ins.State.Running {
 			fmt.Printf("Removing %s container...\n", containerID)
-			var containerRemoveOptions containers.RemoveOptions
-			containerRemoveOptions.Force = bindings.PFalse
-			containerRemoveOptions.Volumes = bindings.PFalse
-			err := containers.Remove(*connText, containerID, &containerRemoveOptions)
+			_, err := containers.Remove(*connText, containerID, new(containers.RemoveOptions).WithForce(false).WithVolumes(false))
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -100,10 +82,7 @@ func ListTentContainers(connText *context.Context) (containerList []entities.Lis
 		"name": {"tent-"},
 	}
 
-	var containerListOptions containers.ListOptions
-	containerListOptions.Filters = filters
-
-	containerList, err := containers.List(*connText, &containerListOptions)
+	containerList, err := containers.List(*connText, new(containers.ListOptions).WithFilters(filters))
 	if err != nil {
 		log.Fatalln(err)
 	}
