@@ -37,5 +37,7 @@ var Mongo types.Service = types.Service{
 			Mutable: true,
 		},
 	},
-	Command: []string{"--serviceExecutor", "adaptive"},
+	InsecureEnv:  []types.EnvVar{},
+	InsecureInfo: "authentication disabled, no credentials required",
+	Command:     []string{"--serviceExecutor", "adaptive"},
 }

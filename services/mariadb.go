@@ -31,4 +31,8 @@ var MariaDB types.Service = types.Service{
 			Mutable: true,
 		},
 	},
+	InsecureEnv: []types.EnvVar{
+		{Key: "MARIADB_ALLOW_EMPTY_ROOT_PASSWORD", Value: "yes"},
+	},
+	InsecureInfo: "username: root, password: (empty)",
 }

@@ -13,6 +13,8 @@ type Service struct {
 	Volumes      []VolumeMount
 	PortMappings []PortMapping
 	Env          []EnvVar
+	InsecureEnv  []EnvVar
+	InsecureInfo string
 	Command      []string
 }
 
@@ -67,6 +69,16 @@ func (service *Service) GetVolumeName() (volumeName string) {
 	volumeName = service.GetContainerName() + "-" + "data"
 
 	return
+}
+
+// ApplyInsecure replaces the service's env vars with InsecureEnv for passwordless operation.
+func (service *Service) ApplyInsecure() (string, error) {
+	if service.InsecureEnv == nil {
+		return "", fmt.Errorf("%s does not support insecure mode", service.Name)
+	}
+
+	service.Env = service.InsecureEnv
+	return service.InsecureInfo, nil
 }
 
 // GetImageName method generates full image name for services by combining their image name and tag.

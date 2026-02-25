@@ -10,6 +10,7 @@ import (
 )
 
 var isDefault bool
+var insecure bool
 var restartPolicy string
 
 // startCmd represents the start command
@@ -31,6 +32,17 @@ It also sets up necessary named volumes for persisting data.
 
 		for _, service := range args {
 			if s, ok := store.Services[service]; ok {
+				if insecure {
+					info, err := s.ApplyInsecure()
+					if err != nil {
+						fmt.Println(err)
+						continue
+					}
+					if info != "" {
+						fmt.Printf("insecure mode: %s\n", info)
+					}
+				}
+
 				if !isDefault {
 					s.ShowPrompt()
 				}
@@ -45,6 +57,7 @@ It also sets up necessary named volumes for persisting data.
 
 func init() {
 	startCmd.Flags().BoolVarP(&isDefault, "default", "d", false, "starts the service with default options")
+	startCmd.Flags().BoolVar(&insecure, "insecure", false, "start the service without authentication")
 	startCmd.Flags().StringVarP(&restartPolicy, "restart", "r", "", "restart policy (no, always, on-failure[:max-retries], unless-stopped)")
 
 	rootCmd.AddCommand(startCmd)

@@ -31,4 +31,8 @@ var MySQL types.Service = types.Service{
 			Mutable: true,
 		},
 	},
+	InsecureEnv: []types.EnvVar{
+		{Key: "MYSQL_ALLOW_EMPTY_PASSWORD", Value: "yes"},
+	},
+	InsecureInfo: "username: root, password: (empty)",
 }
