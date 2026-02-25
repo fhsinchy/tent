@@ -10,6 +10,7 @@ import (
 )
 
 var isDefault bool
+var restartPolicy string
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
@@ -34,7 +35,7 @@ It also sets up necessary named volumes for persisting data.
 					s.ShowPrompt()
 				}
 
-				rt.StartContainer(rt.CreateContainer(s))
+				rt.StartContainer(rt.CreateContainer(s, restartPolicy))
 			} else {
 				fmt.Printf("%s is not a valid service name\n", service)
 			}
@@ -44,6 +45,7 @@ It also sets up necessary named volumes for persisting data.
 
 func init() {
 	startCmd.Flags().BoolVarP(&isDefault, "default", "d", false, "starts the service with default options")
+	startCmd.Flags().StringVarP(&restartPolicy, "restart", "r", "", "restart policy (no, always, on-failure[:max-retries], unless-stopped)")
 
 	rootCmd.AddCommand(startCmd)
 }

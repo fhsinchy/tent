@@ -14,7 +14,7 @@ import (
 )
 
 // CreateContainer creates a new container for the given service, pulling the image if needed.
-func (r *Runtime) CreateContainer(service *types.Service) string {
+func (r *Runtime) CreateContainer(service *types.Service, restartPolicy string) string {
 	containerExists, err := containers.Exists(r.conn, service.GetContainerName(), new(containers.ExistsOptions).WithExternal(false))
 	if err != nil {
 		log.Fatalln(err)
@@ -76,6 +76,10 @@ func (r *Runtime) CreateContainer(service *types.Service) string {
 
 	if len(service.Command) > 0 {
 		s.Command = service.Command
+	}
+
+	if restartPolicy != "" {
+		s.RestartPolicy = restartPolicy
 	}
 
 	createResponse, err := containers.CreateWithSpec(r.conn, s, nil)
