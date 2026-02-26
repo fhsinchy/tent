@@ -35,46 +35,50 @@ It also sets up necessary named volumes for persisting data.
 			log.Fatalln(err)
 		}
 
-		for _, service := range args {
-			s, ok := store.GetService(service)
-			if !ok {
-				fmt.Printf("%s is not a valid service name. Run 'tent services' to see available services.\n", service)
-				continue
-			}
+		startServices(rt, args, isDefault, insecure, restartPolicy)
+	},
+}
 
-			if insecure {
-				info, err := s.ApplyInsecure()
-				if err != nil {
-					fmt.Println(err)
-					continue
-				}
-				if info != "" {
-					fmt.Printf("insecure mode: %s\n", info)
-				}
-			}
+func startServices(engine runtime.ContainerEngine, args []string, isDefault, insecure bool, restartPolicy string) {
+	for _, service := range args {
+		s, ok := store.GetService(service)
+		if !ok {
+			fmt.Printf("%s is not a valid service name. Run 'tent services' to see available services.\n", service)
+			continue
+		}
 
-			if !isDefault {
-				promptForService(&s)
-			}
-
-			fmt.Printf("Creating %s container using %s image...\n", s.ContainerName(), s.ImageName())
-			containerID, err := rt.CreateContainer(&s, restartPolicy)
+		if insecure {
+			info, err := s.ApplyInsecure()
 			if err != nil {
-				fmt.Printf("error creating %s container: %s\n", service, err)
+				fmt.Println(err)
 				continue
 			}
-
-			if containerID == "" {
-				fmt.Printf("%s container already running\n", s.ContainerName())
-				continue
-			}
-
-			if err := rt.StartContainer(containerID); err != nil {
-				fmt.Printf("error starting %s container: %s\n", service, err)
-				continue
+			if info != "" {
+				fmt.Printf("insecure mode: %s\n", info)
 			}
 		}
-	},
+
+		if !isDefault {
+			promptForService(&s)
+		}
+
+		fmt.Printf("Creating %s container using %s image...\n", s.ContainerName(), s.ImageName())
+		containerID, err := engine.CreateContainer(&s, restartPolicy)
+		if err != nil {
+			fmt.Printf("error creating %s container: %s\n", service, err)
+			continue
+		}
+
+		if containerID == "" {
+			fmt.Printf("%s container already running\n", s.ContainerName())
+			continue
+		}
+
+		if err := engine.StartContainer(containerID); err != nil {
+			fmt.Printf("error starting %s container: %s\n", service, err)
+			continue
+		}
+	}
 }
 
 func promptForService(s *types.Service) {

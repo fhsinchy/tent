@@ -43,7 +43,9 @@ func GetService(name string) (types.Service, bool) {
 	}
 	s.Env = append([]types.EnvVar(nil), s.Env...)
 	if s.InsecureEnv != nil {
-		s.InsecureEnv = append([]types.EnvVar(nil), s.InsecureEnv...)
+		cp := make([]types.EnvVar, len(s.InsecureEnv))
+		copy(cp, s.InsecureEnv)
+		s.InsecureEnv = cp
 	}
 	s.PortMappings = append([]types.PortMapping(nil), s.PortMappings...)
 	s.Volumes = append([]types.VolumeMount(nil), s.Volumes...)

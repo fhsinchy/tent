@@ -4,7 +4,7 @@ Wraps Podman v5 API bindings. All container operations go through the `Runtime` 
 
 ## Files
 
-- **runtime.go** — `Runtime` struct and `Connect()`. Connects to the Podman socket at `$XDG_RUNTIME_DIR/podman/podman.sock`. Assumes rootless Podman (user socket, not system socket).
+- **runtime.go** — `ContainerEngine` interface, `Runtime` struct, and `Connect()`. Connects to the Podman socket at `$XDG_RUNTIME_DIR/podman/podman.sock`. Assumes rootless Podman (user socket, not system socket).
 - **containers.go** — Container lifecycle methods on `Runtime`: `CreateContainer`, `StartContainer`, `StopContainer`, `RemoveContainer`, `ListTentContainers`. Also has the standalone `FilterContainers` function.
 - **types.go** — `ContainerInfo` and `PortInfo` structs. These are tent's own types that replace Podman's `entities.ListContainer` to keep Podman types from leaking into the rest of the codebase.
 
@@ -24,3 +24,7 @@ Every tent container gets two labels:
 ## Volume naming
 
 Volume names at runtime are `{containerName}-{volumeName}`, not just the volume name from the service definition. This means multiple instances of the same service get separate volumes.
+
+## ContainerEngine interface
+
+`ContainerEngine` defines the five container operations (`CreateContainer`, `StartContainer`, `StopContainer`, `RemoveContainer`, `ListTentContainers`). `*Runtime` satisfies it (verified by a compile-time check). Command functions in `cmd/` accept this interface so tests can use a mock without a Podman connection.

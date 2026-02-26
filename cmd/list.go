@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -24,29 +25,35 @@ var listCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		tentContainers, err := rt.ListTentContainers()
-		if err != nil {
+		if err := listContainers(rt, os.Stdout); err != nil {
 			log.Fatalln(err)
 		}
-
-		w := new(tabwriter.Writer)
-
-		w.Init(os.Stdout, 5, 5, 5, ' ', 0)
-
-		defer w.Flush()
-
-		fmt.Fprintf(w, "\n %s\t%s\t%s\t", "CONTAINER", "IMAGE", "PORTS")
-
-		for _, tentContainer := range tentContainers {
-			var portParts []string
-			for _, p := range tentContainer.Ports {
-				portParts = append(portParts, strconv.Itoa(int(p.HostPort))+"->"+strconv.Itoa(int(p.ContainerPort))+"/"+p.Protocol)
-			}
-			ports := strings.Join(portParts, ", ")
-
-			fmt.Fprintf(w, "\n %s\t%s\t%s\t", tentContainer.Name, tentContainer.Image, ports)
-		}
 	},
+}
+
+func listContainers(engine runtime.ContainerEngine, out io.Writer) error {
+	tentContainers, err := engine.ListTentContainers()
+	if err != nil {
+		return err
+	}
+
+	w := new(tabwriter.Writer)
+	w.Init(out, 5, 5, 5, ' ', 0)
+	defer w.Flush()
+
+	fmt.Fprintf(w, "\n %s\t%s\t%s\t", "CONTAINER", "IMAGE", "PORTS")
+
+	for _, tentContainer := range tentContainers {
+		var portParts []string
+		for _, p := range tentContainer.Ports {
+			portParts = append(portParts, strconv.Itoa(int(p.HostPort))+"->"+strconv.Itoa(int(p.ContainerPort))+"/"+p.Protocol)
+		}
+		ports := strings.Join(portParts, ", ")
+
+		fmt.Fprintf(w, "\n %s\t%s\t%s\t", tentContainer.Name, tentContainer.Image, ports)
+	}
+
+	return nil
 }
 
 func init() {
