@@ -55,7 +55,7 @@ Volumes used for persisting data however, will be kept for later usage.
 		} else {
 			for _, service := range args {
 				if _, ok := store.GetService(service); !ok {
-					fmt.Printf("%s is not a valid service name\n", service)
+					fmt.Printf("%s is not a valid service name. Run 'tent services' to see available services.\n", service)
 					continue
 				}
 

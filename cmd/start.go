@@ -38,7 +38,7 @@ It also sets up necessary named volumes for persisting data.
 		for _, service := range args {
 			s, ok := store.GetService(service)
 			if !ok {
-				fmt.Printf("%s is not a valid service name\n", service)
+				fmt.Printf("%s is not a valid service name. Run 'tent services' to see available services.\n", service)
 				continue
 			}
 
@@ -119,6 +119,7 @@ func init() {
 	startCmd.Flags().BoolVarP(&isDefault, "default", "d", false, "starts the service with default options")
 	startCmd.Flags().BoolVar(&insecure, "insecure", false, "start the service without authentication")
 	startCmd.Flags().StringVarP(&restartPolicy, "restart", "r", "", "restart policy (no, always, on-failure[:max-retries], unless-stopped)")
+	startCmd.ValidArgs = store.ListServiceNames()
 
 	rootCmd.AddCommand(startCmd)
 }

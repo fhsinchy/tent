@@ -1,6 +1,8 @@
 package store
 
 import (
+	"sort"
+
 	"github.com/fhsinchy/tent/services"
 	"github.com/fhsinchy/tent/types"
 )
@@ -19,6 +21,18 @@ var registry = map[string]types.Service{
 	"meilisearch":   services.MeiliSearch,
 	"dynamodb":      services.DynamoDB,
 	"mssql":         services.MicrosoftSQLServer,
+	"rabbitmq":      services.RabbitMQ,
+	"minio":         services.MinIO,
+	"clickhouse":    services.ClickHouse,
+	"mailpit":       services.Mailpit,
+	"couchdb":       services.CouchDB,
+	"cassandra":     services.Cassandra,
+	"neo4j":         services.Neo4j,
+	"influxdb":      services.InfluxDB,
+	"typesense":     services.Typesense,
+	"surrealdb":     services.SurrealDB,
+	"valkey":        services.Valkey,
+	"opensearch":    services.OpenSearch,
 }
 
 // GetService returns a deep copy of the named service, or false if not found.
@@ -35,4 +49,14 @@ func GetService(name string) (types.Service, bool) {
 	s.Volumes = append([]types.VolumeMount(nil), s.Volumes...)
 	s.Command = append([]string(nil), s.Command...)
 	return s, true
+}
+
+// ListServiceNames returns a sorted list of all available service names.
+func ListServiceNames() []string {
+	names := make([]string, 0, len(registry))
+	for name := range registry {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }
