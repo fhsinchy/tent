@@ -1,19 +1,22 @@
-VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo development)
-MODULE  := github.com/fhsinchy/tent
-BINARY  := tent
-BINDIR  := bin
+VERSION    := $(shell git describe --tags --always --dirty 2>/dev/null || echo development)
+MODULE     := github.com/fhsinchy/tent
+BINARY     := tent
+BINDIR     := bin
+BUILDTAGS  := containers_image_openpgp
 
-LDFLAGS := -ldflags="-X '$(MODULE)/cmd.version=$(VERSION)'"
+GOFLAGS := CGO_ENABLED=0
+LDFLAGS := -ldflags="-s -w -X '$(MODULE)/cmd.version=$(VERSION)'"
+TAGS    := -tags $(BUILDTAGS)
 
 .PHONY: build install clean vet lint fmt check test
 
 ## Build
 
 build:
-	go build $(LDFLAGS) -o $(BINDIR)/$(BINARY)
+	$(GOFLAGS) go build $(TAGS) $(LDFLAGS) -o $(BINDIR)/$(BINARY)
 
 install:
-	go install $(LDFLAGS)
+	$(GOFLAGS) go install $(TAGS) $(LDFLAGS)
 
 clean:
 	rm -rf $(BINDIR)
@@ -21,7 +24,7 @@ clean:
 ## Quality
 
 vet:
-	go vet ./...
+	$(GOFLAGS) go vet $(TAGS) ./...
 
 fmt:
 	gofmt -s -w .
@@ -34,7 +37,7 @@ lint: vet
 	fi
 
 test:
-	go test ./...
+	$(GOFLAGS) go test $(TAGS) ./...
 
 check: fmt vet lint test
 

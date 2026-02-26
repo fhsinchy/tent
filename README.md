@@ -74,47 +74,7 @@ sudo mv ./tent /usr/local/bin
 
 ### Build from source
 
-Building from source requires Go 1.23+ and a C compiler. You can build in two ways:
-
-**Static build (no C library dependencies):**
-
-```bash
-git clone https://github.com/fhsinchy/tent.git ~/tent
-cd ~/tent
-CGO_ENABLED=0 go build -tags containers_image_openpgp -o bin/tent .
-```
-
-**Dynamic build (links against system libraries):**
-
-This requires development headers for gpgme, btrfs, and device-mapper.
-
-Fedora / RHEL / CentOS:
-
-```bash
-sudo dnf groupinstall "Development Tools" -y
-sudo dnf install golang btrfs-progs-devel gpgme-devel device-mapper-devel -y
-```
-
-Debian / Ubuntu:
-
-```bash
-sudo apt install build-essential golang-go libbtrfs-dev libgpgme-dev libdevmapper-dev -y
-```
-
-Arch Linux:
-
-```bash
-sudo pacman -S base-devel go btrfs-progs gpgme device-mapper
-```
-
-openSUSE:
-
-```bash
-sudo zypper install -t pattern devel_basis
-sudo zypper install go libbtrfs-devel gpgme-devel device-mapper-devel
-```
-
-Then build and install:
+Only requires Go 1.23+. No C compiler or system libraries needed — the build is fully static.
 
 ```bash
 git clone https://github.com/fhsinchy/tent.git ~/tent
