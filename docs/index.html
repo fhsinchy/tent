@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tent - Run dev dependencies as Podman containers</title>
+    <meta name="description" content="Tent runs development dependencies (databases, caches, message brokers, mail catchers) as pre-configured Podman containers. No Dockerfiles, no compose files.">
+    <meta property="og:title" content="Tent - Run dev dependencies as Podman containers">
+    <meta property="og:description" content="24 pre-configured services. One command to start. No Dockerfiles, no compose files. Rootless Podman.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fhsinchy.github.io/tent/">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-logo"><span>&gt;</span> tent</a>
+        <button class="nav-toggle" aria-label="Toggle navigation">
+            <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#story">Story</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li>
+                <a href="https://github.com/fhsinchy/tent" class="nav-github">
+                    <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    GitHub
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+    <h1><span>&gt;</span> tent</h1>
+    <p class="hero-tagline">Run dev dependencies as Podman containers. No Dockerfiles, no compose files.</p>
+    <div class="hero-code">
+        <span class="prompt">$ </span><span class="cmd">tent start postgres</span> <span class="flag">-d</span>       <span class="comment"># running in seconds</span><br>
+        <span class="prompt">$ </span><span class="cmd">tent start redis mongo</span> <span class="flag">-d</span>  <span class="comment"># multiple at once</span><br>
+        <span class="prompt">$ </span><span class="cmd">tent stop</span> <span class="flag">--all</span>              <span class="comment"># done for the day</span>
+    </div>
+    <div class="hero-actions">
+        <a href="#installation" class="btn btn-primary">Install</a>
+        <a href="https://github.com/fhsinchy/tent" class="btn btn-secondary">
+            <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub
+        </a>
+    </div>
+    <p class="hero-warning">Tent is for local development only. It skips TLS, binds to all interfaces, and sets weak default passwords.</p>
+</section>
+
+<!-- Story -->
+<section class="story" id="story">
+    <p class="section-label">Why</p>
+    <h2 class="section-title">The story behind Tent</h2>
+    <p>If you do backend work, you know the drill. You need a database, maybe a cache, a message broker, a mail catcher. So you write a docker-compose file. Then another project needs different versions, so you write another one. Before long you have a graveyard of compose files, each slightly different, none of them quite right. Or worse, you're running services as system packages and they conflict with each other.</p>
+    <p>Compose files are great for defining application stacks, but they're overkill when all you want is a PostgreSQL instance to develop against. You shouldn't need to write a YAML file, pick an image, map ports, set environment variables, and figure out volumes just to get a database running locally.</p>
+    <p>Tent skips all of that. Type <code>tent start postgres -d</code> and you have a PostgreSQL instance running. Need Redis and Mongo too? <code>tent start redis mongo -d</code>. Want to run MySQL 5.7 alongside the latest on a different port? Just start it twice with different tags. Need to skip auth for quick local testing? Add <code>--insecure</code>. Want it to survive reboots? Add <code>--restart always</code>.</p>
+    <p>24 services, all pre-configured with sensible defaults. One binary, no runtime dependencies beyond Podman, no root access needed.</p>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+    <p class="section-label">What you get</p>
+    <h2 class="section-title">Features</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-card-icon">&#9641;</div>
+            <h3>24 pre-configured services</h3>
+            <p>Databases, caches, search engines, message brokers, mail catchers. All ready to go with sensible defaults.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card-icon">&#9655;</div>
+            <h3>One command to start</h3>
+            <p><code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-code);padding:2px 6px;border-radius:3px;color:var(--code-green)">tent start postgres -d</code> and you're running. Start multiple services at once.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card-icon">&#8644;</div>
+            <h3>Multiple instances</h3>
+            <p>Run different versions of the same service on different ports. MySQL 5.7 on 3307, latest on 3306.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card-icon">&#9888;</div>
+            <h3>Insecure mode</h3>
+            <p>Skip authentication for quick local testing. Add <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-code);padding:2px 6px;border-radius:3px;color:var(--code-yellow)">--insecure</code> and connect without passwords.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card-icon">&#8634;</div>
+            <h3>Restart policies</h3>
+            <p>Keep services running across reboots with <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-code);padding:2px 6px;border-radius:3px;color:var(--code-yellow)">--restart always</code>. Supports all Podman restart policies.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card-icon">&#8674;</div>
+            <h3>Interactive or default mode</h3>
+            <p>Prompts let you pick tags, ports, and credentials. Or skip them all with <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-code);padding:2px 6px;border-radius:3px;color:var(--code-yellow)">-d</code> for instant defaults.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card-icon">&#9249;</div>
+            <h3>Tab completion</h3>
+            <p>Shell completions for Bash, Zsh, and Fish. Tab-complete service names on start and stop.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-card-icon">&#128274;</div>
+            <h3>Rootless Podman</h3>
+            <p>Runs through the user Podman socket. No sudo, no root daemon, no privilege escalation.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Services -->
+<section class="services" id="services">
+    <p class="section-label">What's included</p>
+    <h2 class="section-title">24 services</h2>
+    <div class="services-grid">
+        <div class="service-item">
+            <h4>Cassandra</h4>
+            <span class="ports">9042</span>
+        </div>
+        <div class="service-item">
+            <h4>ClickHouse</h4>
+            <span class="ports">8123, 9000</span>
+        </div>
+        <div class="service-item">
+            <h4>CouchDB</h4>
+            <span class="ports">5984</span>
+        </div>
+        <div class="service-item">
+            <h4>DynamoDB</h4>
+            <span class="ports">8000</span>
+        </div>
+        <div class="service-item">
+            <h4>Elasticsearch</h4>
+            <span class="ports">9200</span>
+        </div>
+        <div class="service-item">
+            <h4>InfluxDB</h4>
+            <span class="ports">8086</span>
+        </div>
+        <div class="service-item">
+            <h4>MailHog</h4>
+            <span class="ports">1025, 8025</span>
+        </div>
+        <div class="service-item">
+            <h4>Mailpit</h4>
+            <span class="ports">1025, 8025</span>
+        </div>
+        <div class="service-item">
+            <h4>MariaDB</h4>
+            <span class="ports">3306</span>
+        </div>
+        <div class="service-item">
+            <h4>Meilisearch</h4>
+            <span class="ports">7700</span>
+        </div>
+        <div class="service-item">
+            <h4>Memcached</h4>
+            <span class="ports">11211</span>
+        </div>
+        <div class="service-item">
+            <h4>MinIO</h4>
+            <span class="ports">9000, 9001</span>
+        </div>
+        <div class="service-item">
+            <h4>MongoDB</h4>
+            <span class="ports">27017</span>
+        </div>
+        <div class="service-item">
+            <h4>MSSQL</h4>
+            <span class="ports">1433</span>
+        </div>
+        <div class="service-item">
+            <h4>MySQL</h4>
+            <span class="ports">3306</span>
+        </div>
+        <div class="service-item">
+            <h4>Neo4j</h4>
+            <span class="ports">7474, 7687</span>
+        </div>
+        <div class="service-item">
+            <h4>OpenSearch</h4>
+            <span class="ports">9200, 9600</span>
+        </div>
+        <div class="service-item">
+            <h4>PostGIS</h4>
+            <span class="ports">5432</span>
+        </div>
+        <div class="service-item">
+            <h4>PostgreSQL</h4>
+            <span class="ports">5432</span>
+        </div>
+        <div class="service-item">
+            <h4>RabbitMQ</h4>
+            <span class="ports">5672, 15672</span>
+        </div>
+        <div class="service-item">
+            <h4>Redis</h4>
+            <span class="ports">6379</span>
+        </div>
+        <div class="service-item">
+            <h4>SurrealDB</h4>
+            <span class="ports">8000</span>
+        </div>
+        <div class="service-item">
+            <h4>Typesense</h4>
+            <span class="ports">8108</span>
+        </div>
+        <div class="service-item">
+            <h4>Valkey</h4>
+            <span class="ports">6379</span>
+        </div>
+    </div>
+</section>
+
+<!-- Installation -->
+<section class="installation" id="installation">
+    <p class="section-label">Get started</p>
+    <h2 class="section-title">Installation</h2>
+
+    <div class="install-paths">
+        <div class="install-path">
+            <div class="install-path-header">
+                <h3>Download binary</h3>
+                <p>Statically linked, no runtime dependencies beyond Podman. Grab the binary from the <a href="https://github.com/fhsinchy/tent/releases">releases page</a>.</p>
+            </div>
+            <pre><span class="prompt">$ </span><span class="cmd">chmod +x</span> <span class="output">./tent</span>
+<span class="prompt">$ </span><span class="cmd">sudo mv</span> <span class="output">./tent /usr/local/bin</span></pre>
+        </div>
+        <div class="install-path">
+            <div class="install-path-header">
+                <h3>Build from source</h3>
+                <p>Requires Go 1.23+. No C compiler or system libraries needed &mdash; fully static build.</p>
+            </div>
+            <pre><span class="prompt">$ </span><span class="cmd">git clone</span> <span class="output">https://github.com/fhsinchy/tent.git ~/tent</span>
+<span class="prompt">$ </span><span class="cmd">cd</span> <span class="output">~/tent</span>
+<span class="prompt">$ </span><span class="cmd">make install</span></pre>
+        </div>
+    </div>
+
+    <div class="install-prereq">
+        <h3>Podman setup</h3>
+        <p>Tent requires Podman and its user socket. If you have Podman installed:</p>
+        <pre><span class="comment"># start the service</span>
+<span class="prompt">$ </span><span class="cmd">systemctl</span> <span class="flag">--user</span> <span class="cmd">start podman.socket</span>
+
+<span class="comment"># make it survive reboots</span>
+<span class="prompt">$ </span><span class="cmd">systemctl</span> <span class="flag">--user</span> <span class="cmd">enable podman.socket</span></pre>
+    </div>
+</section>
+
+<!-- Usage -->
+<section class="usage" id="usage">
+    <p class="section-label">How it works</p>
+    <h2 class="section-title">Usage</h2>
+
+    <div class="usage-block">
+        <h3>Starting services</h3>
+        <p>Start with defaults using <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--bg-raised);padding:2px 6px;border-radius:3px;color:var(--code-yellow)">-d</code>, or omit it for interactive prompts where you pick tags, ports, and credentials.</p>
+        <pre><span class="prompt">$ </span><span class="cmd">tent start mysql</span> <span class="flag">-d</span>              <span class="comment"># skip prompts, use defaults</span>
+<span class="prompt">$ </span><span class="cmd">tent start redis mongo</span> <span class="flag">-d</span>        <span class="comment"># start several at once</span>
+<span class="prompt">$ </span><span class="cmd">tent start postgres</span> <span class="flag">--insecure -d</span> <span class="comment"># no password</span>
+<span class="prompt">$ </span><span class="cmd">tent start redis</span> <span class="flag">-d --restart always</span></pre>
+    </div>
+
+    <div class="usage-block">
+        <h3>Stopping services</h3>
+        <p>Stop a specific service or everything at once.</p>
+        <pre><span class="prompt">$ </span><span class="cmd">tent stop mysql</span>                   <span class="comment"># prompts if multiple instances</span>
+<span class="prompt">$ </span><span class="cmd">tent stop mysql</span> <span class="flag">--all</span>             <span class="comment"># all instances of mysql</span>
+<span class="prompt">$ </span><span class="cmd">tent stop</span> <span class="flag">--all</span>                    <span class="comment"># stop everything</span></pre>
+    </div>
+
+    <div class="usage-block">
+        <h3>Listing running services</h3>
+        <pre><span class="prompt">$ </span><span class="cmd">tent list</span>
+<span class="output"> CONTAINER                   IMAGE                    PORTS
+ tent-mysql-5.7-3307         docker.io/mysql:5.7      3307->3306/tcp
+ tent-mysql-latest-3306      docker.io/mysql:latest   3306->3306/tcp</span></pre>
+    </div>
+
+    <div class="usage-block">
+        <h3>Running multiple versions</h3>
+        <p>Run different versions on different ports. Everything is just a container.</p>
+        <pre><span class="prompt">$ </span><span class="cmd">tent start mysql</span> <span class="flag">-d</span>              <span class="comment"># latest on port 3306</span>
+<span class="prompt">$ </span><span class="cmd">tent start mysql</span>                 <span class="comment"># pick tag 5.7 and port 3307</span></pre>
+    </div>
+
+    <div class="usage-block">
+        <h3>Shell completion</h3>
+        <p>Tab-complete service names in your shell.</p>
+        <pre><span class="comment"># bash</span>
+<span class="prompt">$ </span><span class="cmd">tent completion bash</span> <span class="output">&gt; /etc/bash_completion.d/tent</span>
+
+<span class="comment"># zsh</span>
+<span class="prompt">$ </span><span class="cmd">tent completion zsh</span> <span class="output">&gt; "${fpath[1]}/_tent"</span>
+
+<span class="comment"># fish</span>
+<span class="prompt">$ </span><span class="cmd">tent completion fish</span> <span class="output">&gt; ~/.config/fish/completions/tent.fish</span></pre>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <p>Built with <a href="https://go.dev">Go</a> and <a href="https://podman.io">Podman</a></p>
+        <p><a href="https://github.com/fhsinchy/tent">GitHub</a> &middot; MIT License</p>
+    </div>
+</footer>
+
+<script>
+document.querySelector('.nav-toggle').addEventListener('click', function() {
+    document.getElementById('nav-links').classList.toggle('open');
+});
+
+document.querySelectorAll('.nav-links a').forEach(function(link) {
+    link.addEventListener('click', function() {
+        document.getElementById('nav-links').classList.remove('open');
+    });
+});
+</script>
+
+</body>
+</html>
