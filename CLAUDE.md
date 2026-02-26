@@ -55,9 +55,7 @@ To add a new service:
 - `github.com/spf13/cobra` — CLI framework
 - `github.com/spf13/viper` — Config file support (mostly scaffolding, not heavily used yet)
 
-Two build modes:
-- **Static (no C deps):** `CGO_ENABLED=0 go build -tags containers_image_openpgp .` — uses pure Go PGP instead of libgpgme. This is what GoReleaser uses for releases.
-- **Dynamic (needs C libs):** Default `go build` or `make build`. Requires: gpgme-devel, btrfs-progs-devel, device-mapper-devel (Fedora names; see README for other distros).
+All builds are static (`CGO_ENABLED=0`) with the `containers_image_openpgp` build tag, which uses pure Go PGP instead of the C `libgpgme`. No C compiler or system libraries needed. The Makefile, GoReleaser, and CI all use this same configuration.
 
 ## Releasing
 
