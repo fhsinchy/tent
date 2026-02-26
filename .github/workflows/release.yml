@@ -23,7 +23,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Run tests
-        run: go test ./...
+        run: CGO_ENABLED=0 go test -tags containers_image_openpgp ./...
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
