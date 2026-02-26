@@ -65,7 +65,7 @@ Tent talks to Podman through the user socket, so the `--user` flag matters here.
 
 ## Installation
 
-Grab the binary for your platform from the [releases page](https://github.com/fhsinchy/tent/releases/), then:
+Release binaries are statically linked and have no runtime dependencies beyond Podman itself. Grab the binary for your platform from the [releases page](https://github.com/fhsinchy/tent/releases/), then:
 
 ```bash
 chmod +x ./tent
@@ -74,16 +74,44 @@ sudo mv ./tent /usr/local/bin
 
 ### Build from source
 
-On Fedora:
+Building from source requires Go 1.23+ and a C compiler. You can build in two ways:
+
+**Static build (no C library dependencies):**
 
 ```bash
-sudo dnf groupinstall "Development Tools" -y && sudo dnf install golang btrfs-progs-devel gpgme-devel device-mapper-devel -y
+git clone https://github.com/fhsinchy/tent.git ~/tent
+cd ~/tent
+CGO_ENABLED=0 go build -tags containers_image_openpgp -o bin/tent .
 ```
 
-On Ubuntu:
+**Dynamic build (links against system libraries):**
+
+This requires development headers for gpgme, btrfs, and device-mapper.
+
+Fedora / RHEL / CentOS:
+
+```bash
+sudo dnf groupinstall "Development Tools" -y
+sudo dnf install golang btrfs-progs-devel gpgme-devel device-mapper-devel -y
+```
+
+Debian / Ubuntu:
 
 ```bash
 sudo apt install build-essential golang-go libbtrfs-dev libgpgme-dev libdevmapper-dev -y
+```
+
+Arch Linux:
+
+```bash
+sudo pacman -S base-devel go btrfs-progs gpgme device-mapper
+```
+
+openSUSE:
+
+```bash
+sudo zypper install -t pattern devel_basis
+sudo zypper install go libbtrfs-devel gpgme-devel device-mapper-devel
 ```
 
 Then build and install:

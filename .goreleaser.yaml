@@ -7,6 +7,8 @@ builds:
     binary: tent
     env:
       - CGO_ENABLED=0
+    tags:
+      - containers_image_openpgp
     ldflags:
       - -s -w -X github.com/fhsinchy/tent/cmd.version=v{{.Version}}
     goos:

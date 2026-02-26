@@ -55,9 +55,9 @@ To add a new service:
 - `github.com/spf13/cobra` — CLI framework
 - `github.com/spf13/viper` — Config file support (mostly scaffolding, not heavily used yet)
 
-Building requires CGO and system libraries for Podman bindings:
-- Fedora: `btrfs-progs-devel gpgme-devel device-mapper-devel`
-- Ubuntu: `libbtrfs-dev libgpgme-dev libdevmapper-dev`
+Two build modes:
+- **Static (no C deps):** `CGO_ENABLED=0 go build -tags containers_image_openpgp .` — uses pure Go PGP instead of libgpgme. This is what GoReleaser uses for releases.
+- **Dynamic (needs C libs):** Default `go build` or `make build`. Requires: gpgme-devel, btrfs-progs-devel, device-mapper-devel (Fedora names; see README for other distros).
 
 ## Releasing
 
