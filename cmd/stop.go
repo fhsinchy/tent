@@ -31,94 +31,99 @@ Volumes used for persisting data however, will be kept for later usage.
 			log.Fatalln(err)
 		}
 
-		if isAll && len(args) == 0 {
-			tentContainers, err := rt.ListTentContainers()
-			if err != nil {
-				log.Fatalln(err)
-			}
+		stopServices(rt, args, isAll)
+	},
+}
 
-			if len(tentContainers) > 0 {
-				for _, container := range tentContainers {
-					fmt.Printf("Stopping %s container...\n", container.Name)
-					if err := rt.StopContainer(container.ID); err != nil {
-						fmt.Printf("error stopping container %s: %s\n", container.Name, err)
-						continue
-					}
-					fmt.Printf("Removing %s container...\n", container.Name)
-					if err := rt.RemoveContainer(container.ID); err != nil {
-						fmt.Printf("error removing container %s: %s\n", container.Name, err)
-					}
+func stopServices(engine runtime.ContainerEngine, args []string, isAll bool) {
+	if isAll && len(args) == 0 {
+		tentContainers, err := engine.ListTentContainers()
+		if err != nil {
+			fmt.Printf("error listing containers: %s\n", err)
+			return
+		}
+
+		if len(tentContainers) > 0 {
+			for _, container := range tentContainers {
+				fmt.Printf("Stopping %s container...\n", container.Name)
+				if err := engine.StopContainer(container.ID); err != nil {
+					fmt.Printf("error stopping container %s: %s\n", container.Name, err)
+					continue
 				}
-			} else {
-				fmt.Println("no running containers found")
+				fmt.Printf("Removing %s container...\n", container.Name)
+				if err := engine.RemoveContainer(container.ID); err != nil {
+					fmt.Printf("error removing container %s: %s\n", container.Name, err)
+				}
 			}
 		} else {
-			for _, service := range args {
-				if _, ok := store.GetService(service); !ok {
-					fmt.Printf("%s is not a valid service name. Run 'tent services' to see available services.\n", service)
+			fmt.Println("no running containers found")
+		}
+	} else {
+		for _, service := range args {
+			if _, ok := store.GetService(service); !ok {
+				fmt.Printf("%s is not a valid service name. Run 'tent services' to see available services.\n", service)
+				continue
+			}
+
+			tentContainers, err := engine.ListTentContainers()
+			if err != nil {
+				fmt.Printf("error listing containers: %s\n", err)
+				continue
+			}
+
+			filteredTentContainers := runtime.FilterContainers(tentContainers, service)
+
+			containerCount := len(filteredTentContainers)
+
+			if containerCount == 1 {
+				fmt.Printf("Stopping %s container...\n", filteredTentContainers[0].Name)
+				if err := engine.StopContainer(filteredTentContainers[0].ID); err != nil {
+					fmt.Printf("error stopping container: %s\n", err)
 					continue
 				}
-
-				tentContainers, err := rt.ListTentContainers()
-				if err != nil {
-					fmt.Printf("error listing containers: %s\n", err)
-					continue
+				fmt.Printf("Removing %s container...\n", filteredTentContainers[0].Name)
+				if err := engine.RemoveContainer(filteredTentContainers[0].ID); err != nil {
+					fmt.Printf("error removing container: %s\n", err)
 				}
-
-				filteredTentContainers := runtime.FilterContainers(tentContainers, service)
-
-				containerCount := len(filteredTentContainers)
-
-				if containerCount == 1 {
-					fmt.Printf("Stopping %s container...\n", filteredTentContainers[0].Name)
-					if err := rt.StopContainer(filteredTentContainers[0].ID); err != nil {
-						fmt.Printf("error stopping container: %s\n", err)
-						continue
-					}
-					fmt.Printf("Removing %s container...\n", filteredTentContainers[0].Name)
-					if err := rt.RemoveContainer(filteredTentContainers[0].ID); err != nil {
-						fmt.Printf("error removing container: %s\n", err)
-					}
-				} else if containerCount > 1 {
-					if isAll {
-						for _, tentContainer := range filteredTentContainers {
-							fmt.Printf("Stopping %s container...\n", tentContainer.Name)
-							if err := rt.StopContainer(tentContainer.ID); err != nil {
-								fmt.Printf("error stopping container %s: %s\n", tentContainer.Name, err)
-								continue
-							}
-							fmt.Printf("Removing %s container...\n", tentContainer.Name)
-							if err := rt.RemoveContainer(tentContainer.ID); err != nil {
-								fmt.Printf("error removing container %s: %s\n", tentContainer.Name, err)
-							}
+			} else if containerCount > 1 {
+				if isAll {
+					for _, tentContainer := range filteredTentContainers {
+						fmt.Printf("Stopping %s container...\n", tentContainer.Name)
+						if err := engine.StopContainer(tentContainer.ID); err != nil {
+							fmt.Printf("error stopping container %s: %s\n", tentContainer.Name, err)
+							continue
 						}
-					} else {
-						var choice int
-						fmt.Printf("multiple %s containers found:\n", service)
-						for index, tentContainer := range filteredTentContainers {
-							fmt.Printf("  %d --> %s\n", index, tentContainer.Name)
-						}
-						fmt.Println("you can execute 'tent stop --all' to stop all running containers")
-						fmt.Printf("pick the container you want to stop (0 - %d): ", containerCount-1)
-						fmt.Scanln(&choice)
-						if choice >= 0 && choice < containerCount {
-							fmt.Printf("Stopping %s container...\n", filteredTentContainers[choice].Name)
-							if err := rt.StopContainer(filteredTentContainers[choice].ID); err != nil {
-								fmt.Printf("error stopping container: %s\n", err)
-								continue
-							}
-							fmt.Printf("Removing %s container...\n", filteredTentContainers[choice].Name)
-							if err := rt.RemoveContainer(filteredTentContainers[choice].ID); err != nil {
-								fmt.Printf("error removing container: %s\n", err)
-							}
+						fmt.Printf("Removing %s container...\n", tentContainer.Name)
+						if err := engine.RemoveContainer(tentContainer.ID); err != nil {
+							fmt.Printf("error removing container %s: %s\n", tentContainer.Name, err)
 						}
 					}
 				} else {
-					fmt.Printf("no running %s container found\n", service)
+					var choice int
+					fmt.Printf("multiple %s containers found:\n", service)
+					for index, tentContainer := range filteredTentContainers {
+						fmt.Printf("  %d --> %s\n", index, tentContainer.Name)
+					}
+					fmt.Println("you can execute 'tent stop --all' to stop all running containers")
+					fmt.Printf("pick the container you want to stop (0 - %d): ", containerCount-1)
+					fmt.Scanln(&choice)
+					if choice >= 0 && choice < containerCount {
+						fmt.Printf("Stopping %s container...\n", filteredTentContainers[choice].Name)
+						if err := engine.StopContainer(filteredTentContainers[choice].ID); err != nil {
+							fmt.Printf("error stopping container: %s\n", err)
+							continue
+						}
+						fmt.Printf("Removing %s container...\n", filteredTentContainers[choice].Name)
+						if err := engine.RemoveContainer(filteredTentContainers[choice].ID); err != nil {
+							fmt.Printf("error removing container: %s\n", err)
+						}
+					}
 				}
+			} else {
+				fmt.Printf("no running %s container found\n", service)
 			}
 		}
-	},
+	}
 }
 
 func init() {
