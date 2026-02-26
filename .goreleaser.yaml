@@ -1,0 +1,34 @@
+version: 2
+
+project_name: tent
+
+builds:
+  - main: .
+    binary: tent
+    env:
+      - CGO_ENABLED=0
+    tags:
+      - containers_image_openpgp
+    ldflags:
+      - -s -w -X github.com/fhsinchy/tent/cmd.version=v{{.Version}}
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"

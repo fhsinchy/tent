@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"text/tabwriter"
 
-	"github.com/fhsinchy/tent/utils"
+	"github.com/fhsinchy/tent/runtime"
 	"github.com/spf13/cobra"
 )
 
@@ -17,9 +19,15 @@ var listCmd = &cobra.Command{
 	Short: "Lists all running services",
 	Long:  `The list command lists all the running services in a nicely formatted table.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		connText := utils.GetContext()
+		rt, err := runtime.Connect()
+		if err != nil {
+			log.Fatalln(err)
+		}
 
-		tentContainers := utils.ListTentContainers(connText)
+		tentContainers, err := rt.ListTentContainers()
+		if err != nil {
+			log.Fatalln(err)
+		}
 
 		w := new(tabwriter.Writer)
 
@@ -30,9 +38,13 @@ var listCmd = &cobra.Command{
 		fmt.Fprintf(w, "\n %s\t%s\t%s\t", "CONTAINER", "IMAGE", "PORTS")
 
 		for _, tentContainer := range tentContainers {
-			ports := strconv.Itoa(int(tentContainer.Ports[0].HostPort)) + "->" + strconv.Itoa(int(tentContainer.Ports[0].ContainerPort)) + "/" + tentContainer.Ports[0].Protocol
+			var portParts []string
+			for _, p := range tentContainer.Ports {
+				portParts = append(portParts, strconv.Itoa(int(p.HostPort))+"->"+strconv.Itoa(int(p.ContainerPort))+"/"+p.Protocol)
+			}
+			ports := strings.Join(portParts, ", ")
 
-			fmt.Fprintf(w, "\n %s\t%s\t%s\t", tentContainer.Names[0], tentContainer.Image, ports)
+			fmt.Fprintf(w, "\n %s\t%s\t%s\t", tentContainer.Name, tentContainer.Image, ports)
 		}
 	},
 }

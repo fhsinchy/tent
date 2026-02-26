@@ -31,4 +31,8 @@ var Postgres types.Service = types.Service{
 			Mutable: true,
 		},
 	},
+	InsecureEnv: []types.EnvVar{
+		{Key: "POSTGRES_HOST_AUTH_METHOD", Value: "trust"},
+	},
+	InsecureInfo: "username: postgres, password: (none, trust auth)",
 }

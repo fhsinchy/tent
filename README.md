@@ -1,171 +1,218 @@
 # tent ![GitHub all releases](https://img.shields.io/github/downloads/fhsinchy/tent/total)
 
-Tent is a CLI tool for running development dependencies such as MySQL, Mongo, ElasticSearch etc inside pre-configured containers using simple one-liners.
+Tent runs development dependencies (databases, caches, message brokers, mail catchers) as pre-configured Podman containers. No Dockerfiles, no compose files.
 
-Running containers can be accessed via their exposed ports and can be paired with any other application on your system.
+```bash
+tent start postgres -d       # running in seconds
+tent start redis mongo -d    # multiple at once
+tent stop --all              # done for the day
+```
 
-Starting a service such as `mysql` is as simple as executing `tent start mysql` and you'll never have to look back at it.
+Inspired by [tighten/takeout](https://github.com/tighten/takeout).
 
-But `mysql` is not the only available service. A list of all the available services can be found on: [services.go](https://github.com/fhsinchy/tent/blob/master/store/services.go)
+**Tent is for local development only.** It skips TLS, binds to all interfaces, sets weak default passwords, and has no backup or monitoring. Do not run it on a production server.
 
-Tent is heavily inspired from [tighten/takeout](https://github.com/tighten/takeout) and is an experimental project. Hence, care should be taken if you're using it in a critical environment.
+## Available services
+
+Run `tent services` to get this list from the CLI.
+
+| Service | Default ports |
+|---------|--------------|
+| Cassandra | 9042 |
+| ClickHouse | 8123, 9000 |
+| CouchDB | 5984 |
+| DynamoDB | 8000 |
+| Elasticsearch | 9200 |
+| InfluxDB | 8086 |
+| MailHog | 1025, 8025 |
+| Mailpit | 1025, 8025 |
+| MariaDB | 3306 |
+| Meilisearch | 7700 |
+| Memcached | 11211 |
+| MinIO | 9000, 9001 |
+| MongoDB | 27017 |
+| MSSQL | 1433 |
+| MySQL | 3306 |
+| Neo4j | 7474, 7687 |
+| OpenSearch | 9200, 9600 |
+| PostGIS | 5432 |
+| PostgreSQL | 5432 |
+| RabbitMQ | 5672, 15672 |
+| Redis | 6379 |
+| SurrealDB | 8000 |
+| Typesense | 8108 |
+| Valkey | 6379 |
+
+Some services share default ports (Redis/Valkey on 6379, MinIO/ClickHouse on 9000, etc.). Tent prompts you to pick a different port when you start a service interactively.
 
 ## Dependencies
 
-* Linux
-* [Podman](https://podman.io/getting-started/installation) Installed
-* Podman System Service Running
+- Linux
+- [Podman](https://podman.io/getting-started/installation) installed
+- Podman system service running
 
-If you have Podman installed, you can start the system service as follows:
+If you have Podman installed, start the system service with:
 
 ```bash
-## starts the podman system service
+# start the service
 systemctl --user start podman.socket
 
-## enables the podman system service, so it doesn't close on every reboot
+# make it survive reboots
 systemctl --user enable podman.socket
-
-## stops the podman system service
-systemctl --user stop podman.socket
-
-## disables the podman system service, so it doesn't start on every reboot
-systemctl --user disable podman.socket
 ```
 
-Tent assumes that you're running the service in non-root mode, hence the `--user` argument is necessary in the above commands.
+Tent talks to Podman through the user socket, so the `--user` flag matters here.
 
 ## Installation
 
-Visit the [tent release page](https://github.com/fhsinchy/tent/releases/) and download the `tent` binary to your computer. Open up your terminal where you've donwloaded the file and execute following commands:
+Release binaries are statically linked and have no runtime dependencies beyond Podman itself. Grab the binary for your platform from the [releases page](https://github.com/fhsinchy/tent/releases/), then:
 
 ```bash
 chmod +x ./tent
-
 sudo mv ./tent /usr/local/bin
 ```
 
-Now the `tent` command should be available everywhere in your system.
+### Build from source
 
-## Build From Source
+Building from source requires Go 1.23+ and a C compiler. You can build in two ways:
 
-If you're on a Fedora system, the following command should install the necessary development dependencies.
+**Static build (no C library dependencies):**
 
 ```bash
-sudo dnf groupinstall "Development Tools" -y && sudo dnf install golang btrfs-progs-devel gpgme-devel device-mapper-devel -y
+git clone https://github.com/fhsinchy/tent.git ~/tent
+cd ~/tent
+CGO_ENABLED=0 go build -tags containers_image_openpgp -o bin/tent .
 ```
 
-And on a Ubuntu system, the following command should install the necessary development dependencies.
+**Dynamic build (links against system libraries):**
+
+This requires development headers for gpgme, btrfs, and device-mapper.
+
+Fedora / RHEL / CentOS:
+
+```bash
+sudo dnf groupinstall "Development Tools" -y
+sudo dnf install golang btrfs-progs-devel gpgme-devel device-mapper-devel -y
+```
+
+Debian / Ubuntu:
 
 ```bash
 sudo apt install build-essential golang-go libbtrfs-dev libgpgme-dev libdevmapper-dev -y
 ```
 
-If you're on a different system you, may look for equivalent package on the respective package repositories.
+Arch Linux:
 
-Now build and install the application as follows:
+```bash
+sudo pacman -S base-devel go btrfs-progs gpgme device-mapper
+```
+
+openSUSE:
+
+```bash
+sudo zypper install -t pattern devel_basis
+sudo zypper install go libbtrfs-devel gpgme-devel device-mapper-devel
+```
+
+Then build and install:
 
 ```bash
 git clone https://github.com/fhsinchy/tent.git ~/tent
-
 cd ~/tent
-
 make install
 ```
 
 ## Usage
 
-The `tent` binary has following commands:
-
-* `tent start <service name>` - starts a container for the given service
-* `tent stop <service name>` - stops and removes a container for the given service
-* `tent list` - lists all running containers
-
-Most of the services in `tent` utilizes volumes for persisting data, so even if you stop a service, it's data will be persisted in a volume for later usage. These volumes can listed by executing `podman volume ls` and can be managed like any other podman volume.
-
-### Start a Service
-
-The generic syntax for the `start` command is as follows:
+### Starting services
 
 ```bash
-tent start <service name>
-
-## starts mysql and prompts you where necessary
+# interactive mode — prompts for tag, ports, credentials
 tent start mysql
 
-## starts redis and mongo and prompts you where necessary
-tent start redis mongo
-```
-
-### Start Service with Default Configuration
-
-The `--default` flag for the `start` command can be used to skip all the prompts and start a service with default configuration
-
-```bash
-tent start <service name> --default
-
-## starts mysql with the default configuration
+# skip all prompts, use defaults
 tent start mysql --default
+# or
+tent start mysql -d
 
-## starts redis and mongo with default configuration
-tent start redis mongo --default
+# start several at once
+tent start redis mongo -d
 ```
 
-### Stop a Service
+### Insecure mode
 
-The generic syntax for the `stop` command is as follows:
+Some services support `--insecure` to disable authentication entirely. Useful when you just want to poke at something locally without worrying about passwords.
 
 ```bash
-tent stop <service name>
+tent start postgres --insecure -d    # trust auth, no password
+tent start neo4j --insecure -d       # auth disabled
+tent start clickhouse --insecure -d  # empty password
+```
 
-## stops mysql and removes the container
-## prompts you if multiple containers are found
+Services that support it: ClickHouse, MongoDB, MySQL, Neo4j, PostgreSQL, SurrealDB.
+
+### Restart policies
+
+```bash
+tent start redis -d --restart always
+tent start postgres -d --restart unless-stopped
+tent start mysql -d --restart on-failure:5
+```
+
+### Stopping services
+
+```bash
+# stop a specific service (prompts if multiple instances are running)
 tent stop mysql
 
-## stops all mysql containers and removes them
+# stop all instances of a service
 tent stop mysql --all
 
-## stops redis and mongo then removes the containers.
-## prompts you if multiple containers are found for any of the given services.
-tent stop redis mongo
-
-## stops all redis and mongo conainers and then removes them
-tent stop redis mongo --all
-```
-
-### Stop all Services
-
-The `--all` flag for the `stop` command can be used to stop and remove all running tent containers at once
-
-```bash
+# stop everything tent is running
 tent stop --all
 ```
 
-## Running Multiple Versions
-
-Given all the services are running inside containers, you can spin up multiple versions of the same service as long as you're keeping the port different.
-
-Run `tent start mysql` twice; the first time, use the `--default` flag, and the second time, put `5.7` as tag and `3307` as host port.
-
-Now, if you run `tent list`, you'll see both services running at the same time.
+### Listing running services
 
 ```bash
-+--------------+----------------+---------------+---------------+
-| CONTAINER              | Image               | PORTS          |
-+--------------+----------------+---------------+---------------+
-| tent-mysql-5.7-3307    | docker.io/mysql:5.7 | 3307->3306/tcp |
-| tent-mysql-latest-3306 | docker.io/mysql:5.7 | 3306->3306/tcp |
-+--------------+----------------+---------------+---------------+
+tent list
 ```
 
-## Container Management
+Prints a table with container names, images, and all mapped ports.
 
-Containers started by `tent` are regular containers with some pre-set configurations. So you can use regular `podman` commands such as `ls`, `inspect`, `logs` etc on them. Although `tent` comes with a `list` command, using the `podman` commands will result in more informative results. The target of `tent` is to provide plug and play containers, not to become a full-fledged `podman` cli.
+### Shell completion
 
-## Todo
+`tent start` and `tent stop` support tab completion for service names. Set up shell completions with:
 
-Although `tent` is in a stable state right now, there things that I'll have to do. A tentative list is as follows:
+```bash
+# bash
+tent completion bash > /etc/bash_completion.d/tent
 
-* [x] Set-up proper versioning
-* [ ] Write Tests (very important)
+# zsh
+tent completion zsh > "${fpath[1]}/_tent"
 
-That's all for now, this list will certainly change as I keep going working on my project.
+# fish
+tent completion fish > ~/.config/fish/completions/tent.fish
+```
+
+## Running multiple versions
+
+Since everything is a container, you can run multiple versions of the same service on different ports.
+
+```bash
+tent start mysql -d                  # latest on port 3306
+tent start mysql                     # pick tag 5.7 and port 3307
+tent list
+```
+
+```
+ CONTAINER                   IMAGE                    PORTS
+ tent-mysql-5.7-3307         docker.io/mysql:5.7      3307->3306/tcp
+ tent-mysql-latest-3306      docker.io/mysql:latest   3306->3306/tcp
+```
+
+## Container management
+
+Tent containers are regular Podman containers. You can use `podman logs`, `podman inspect`, and anything else you normally would. Tent is meant to get containers running quickly, not to replace the Podman CLI.
+
+Most services persist data in named volumes. Stopping a service removes the container but keeps the volume. You can manage volumes with `podman volume ls` and `podman volume rm` as usual.
