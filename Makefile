@@ -1,9 +1,9 @@
-VERSION ?= 0.0.5
+VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo development)
 MODULE  := github.com/fhsinchy/tent
 BINARY  := tent
 BINDIR  := bin
 
-LDFLAGS := -ldflags="-X '$(MODULE)/cmd.version=v$(VERSION)'"
+LDFLAGS := -ldflags="-X '$(MODULE)/cmd.version=$(VERSION)'"
 
 .PHONY: build install clean vet lint fmt check test
 

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"text/tabwriter"
 
@@ -37,10 +38,11 @@ var listCmd = &cobra.Command{
 		fmt.Fprintf(w, "\n %s\t%s\t%s\t", "CONTAINER", "IMAGE", "PORTS")
 
 		for _, tentContainer := range tentContainers {
-			var ports string
-			if len(tentContainer.Ports) > 0 {
-				ports = strconv.Itoa(int(tentContainer.Ports[0].HostPort)) + "->" + strconv.Itoa(int(tentContainer.Ports[0].ContainerPort)) + "/" + tentContainer.Ports[0].Protocol
+			var portParts []string
+			for _, p := range tentContainer.Ports {
+				portParts = append(portParts, strconv.Itoa(int(p.HostPort))+"->"+strconv.Itoa(int(p.ContainerPort))+"/"+p.Protocol)
 			}
+			ports := strings.Join(portParts, ", ")
 
 			fmt.Fprintf(w, "\n %s\t%s\t%s\t", tentContainer.Name, tentContainer.Image, ports)
 		}

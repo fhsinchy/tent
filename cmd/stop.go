@@ -123,6 +123,7 @@ Volumes used for persisting data however, will be kept for later usage.
 
 func init() {
 	stopCmd.Flags().BoolVarP(&isAll, "all", "a", false, "stops all running services")
+	stopCmd.ValidArgs = store.ListServiceNames()
 
 	rootCmd.AddCommand(stopCmd)
 }
