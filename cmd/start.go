@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/fhsinchy/tent/runtime"
 	"github.com/fhsinchy/tent/store"
+	"github.com/fhsinchy/tent/types"
 
 	"github.com/spf13/cobra"
 )
@@ -28,31 +30,89 @@ It also sets up necessary named volumes for persisting data.
 `,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		rt := runtime.Connect()
+		rt, err := runtime.Connect()
+		if err != nil {
+			log.Fatalln(err)
+		}
 
 		for _, service := range args {
-			if s, ok := store.Services[service]; ok {
-				if insecure {
-					info, err := s.ApplyInsecure()
-					if err != nil {
-						fmt.Println(err)
-						continue
-					}
-					if info != "" {
-						fmt.Printf("insecure mode: %s\n", info)
-					}
-				}
-
-				if !isDefault {
-					s.ShowPrompt()
-				}
-
-				rt.StartContainer(rt.CreateContainer(s, restartPolicy))
-			} else {
+			s, ok := store.GetService(service)
+			if !ok {
 				fmt.Printf("%s is not a valid service name\n", service)
+				continue
+			}
+
+			if insecure {
+				info, err := s.ApplyInsecure()
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+				if info != "" {
+					fmt.Printf("insecure mode: %s\n", info)
+				}
+			}
+
+			if !isDefault {
+				promptForService(&s)
+			}
+
+			fmt.Printf("Creating %s container using %s image...\n", s.ContainerName(), s.ImageName())
+			containerID, err := rt.CreateContainer(&s, restartPolicy)
+			if err != nil {
+				fmt.Printf("error creating %s container: %s\n", service, err)
+				continue
+			}
+
+			if containerID == "" {
+				fmt.Printf("%s container already running\n", s.ContainerName())
+				continue
+			}
+
+			if err := rt.StartContainer(containerID); err != nil {
+				fmt.Printf("error starting %s container: %s\n", service, err)
+				continue
 			}
 		}
 	},
+}
+
+func promptForService(s *types.Service) {
+	var tag string
+	fmt.Printf("Which tag do you want to use? (default: %s): ", s.Tag)
+	fmt.Scanln(&tag)
+	if tag != "" {
+		s.Tag = tag
+	}
+
+	for index, mapping := range s.PortMappings {
+		var port uint16
+		fmt.Printf("%s? (default: %d): ", mapping.Text, mapping.HostPort)
+		fmt.Scanln(&port)
+		if port != 0 {
+			s.PortMappings[index].HostPort = port
+		}
+	}
+
+	for index, env := range s.Env {
+		if env.Mutable {
+			var value string
+			fmt.Printf("%s? (default: %s): ", env.Text, env.Value)
+			fmt.Scanln(&value)
+			if value != "" {
+				s.Env[index].Value = value
+			}
+		}
+	}
+
+	for index, volume := range s.Volumes {
+		var name string
+		fmt.Printf("%s? (default: %s): ", volume.Text, volume.Name)
+		fmt.Scanln(&name)
+		if name != "" {
+			s.Volumes[index].Name = name
+		}
+	}
 }
 
 func init() {

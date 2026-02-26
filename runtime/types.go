@@ -2,10 +2,11 @@ package runtime
 
 // ContainerInfo holds tent-owned container metadata, replacing the Podman entities.ListContainer type.
 type ContainerInfo struct {
-	ID    string
-	Name  string
-	Image string
-	Ports []PortInfo
+	ID      string
+	Name    string
+	Image   string
+	Ports   []PortInfo
+	Service string
 }
 
 // PortInfo holds port mapping details for a container.

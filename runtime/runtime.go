@@ -2,7 +2,7 @@ package runtime
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/containers/podman/v5/pkg/bindings"
@@ -14,14 +14,14 @@ type Runtime struct {
 }
 
 // Connect establishes a connection with the Podman System Service and returns a Runtime.
-func Connect() *Runtime {
+func Connect() (*Runtime, error) {
 	sockDir := os.Getenv("XDG_RUNTIME_DIR")
 	socket := "unix:" + sockDir + "/podman/podman.sock"
 
 	conn, err := bindings.NewConnection(context.Background(), socket)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, fmt.Errorf("connecting to podman: %w", err)
 	}
 
-	return &Runtime{conn: conn}
+	return &Runtime{conn: conn}, nil
 }
