@@ -8,7 +8,9 @@ tent start redis mongo -d    # multiple at once
 tent stop --all              # done for the day
 ```
 
-Inspired by [tighten/takeout](https://github.com/tighten/takeout). This is an experimental project, so think twice before pointing it at anything you care about.
+Inspired by [tighten/takeout](https://github.com/tighten/takeout).
+
+**Tent is for local development only.** It skips TLS, binds to all interfaces, sets weak default passwords, and has no backup or monitoring. Do not run it on a production server.
 
 ## Available services
 
