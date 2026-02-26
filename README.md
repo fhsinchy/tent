@@ -1,4 +1,4 @@
-# tent ![GitHub all releases](https://img.shields.io/github/downloads/fhsinchy/tent/total)
+# tent
 
 Tent runs development dependencies (databases, caches, message brokers, mail catchers) as pre-configured Podman containers. No Dockerfiles, no compose files.
 
